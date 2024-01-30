@@ -29,6 +29,20 @@
             'm', \
             'n'
 
+
+static float  playerMoveDist = 10.0f;
+
+static int windowWidth = 800;
+static int windowHeight = 600;
+
+static GLib::Point2D playerStart = { -180.0f, -100.0f };
+static GLib::Point2D monsterStart = { 180.0f, -100.0f };
+
+bool g_bQuit = false;
+
+GLib::Point2D playerTarget = playerStart;
+
+
 char* enterName()
 {
     char* str;
@@ -89,6 +103,8 @@ void printMonster(Linkedlist list) {
 void* LoadFile(const char* i_pFilename, size_t& o_sizeFile);
 GLib::Sprite* CreateSprite(const char* i_pFilename);
 
+void MovetoTarget(GLib::Point2D& start, GLib::Point2D target, float moveDist);
+
 void TestKeyCallback(unsigned int i_VKeyID, bool bWentDown)
 {
 #ifdef _DEBUG
@@ -98,12 +114,42 @@ void TestKeyCallback(unsigned int i_VKeyID, bool bWentDown)
     sprintf_s(Buffer, lenBuffer, "VKey 0x%04x went %s\n", i_VKeyID, bWentDown ? "down" : "up");
     OutputDebugStringA(Buffer);
 #endif // __DEBUG
+
+
+    // Check if the 'q' key was pressed
+    if (i_VKeyID == 'Q' && bWentDown)
+    {
+        g_bQuit = true; 
+    }
+
+    if (i_VKeyID == 'W' && bWentDown)
+    {
+        playerTarget.y = min(windowHeight/2, playerTarget.y + playerMoveDist);
+    }
+
+    if (i_VKeyID == 'A' && bWentDown)
+    {
+        playerTarget.x = max(-windowWidth/2, playerTarget.x - playerMoveDist);
+    }
+
+    if (i_VKeyID == 'S' && bWentDown)
+    {
+        playerTarget.y = max(-windowHeight/2, playerTarget.y - playerMoveDist);
+    }
+
+    if (i_VKeyID == 'D' && bWentDown)
+    {
+        playerTarget.x = min(windowWidth/2, playerTarget.x + playerMoveDist);
+    }
 }
 
 int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_lpCmdLine, int i_nCmdShow)
 {
+    // random seed
+    srand(time(0));
+
     // IMPORTANT: first we need to initialize GLib
-    bool bSuccess = GLib::Initialize(i_hInstance, i_nCmdShow, "GLibTest", -1, 800, 600, true);
+    bool bSuccess = GLib::Initialize(i_hInstance, i_nCmdShow, "GLibTest", -1, windowWidth, windowHeight, true);
 
     if (bSuccess)
     {
@@ -115,15 +161,16 @@ int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_l
         GLib::Sprite* pGoodGuy = CreateSprite("data\\GoodGuy.dds");
         GLib::Sprite* pBadGuy = CreateSprite("data\\BadGuy.dds");
 
-        bool bQuit = false;
-
         do
         {
             // IMPORTANT: We need to let GLib do it's thing. 
-            GLib::Service(bQuit);
+            GLib::Service(g_bQuit);
 
-            if (!bQuit)
+            if (!g_bQuit)
             {
+                static GLib::Point2D	GoodOffset = playerStart;
+                static GLib::Point2D	BadOffset = monsterStart;
+
                 // IMPORTANT: Tell GLib that we want to start rendering
                 GLib::BeginRendering(DirectX::Colors::Blue);
                 // Tell GLib that we want to render some sprites
@@ -131,37 +178,21 @@ int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_l
 
                 if (pGoodGuy)
                 {
-                    static float			moveDist = .01f;
-                    static float			moveDir = moveDist;
-
-                    static GLib::Point2D	Offset = { -180.0f, -100.0f };
-
-                    if (Offset.x < -220.0f)
-                        moveDir = moveDist;
-                    else if (Offset.x > -140.0f)
-                        moveDir = -moveDist;
-
-                    Offset.x += moveDir;
+                    static float			moveDist = .03f;
+                    
+                    MovetoTarget(GoodOffset, playerTarget, moveDist);
 
                     // Tell GLib to render this sprite at our calculated location
-                    GLib::Render(*pGoodGuy, Offset, 0.0f, 0.0f);
+                    GLib::Render(*pGoodGuy, GoodOffset, 0.0f, 0.0f);
                 }
                 if (pBadGuy)
                 {
                     static float			moveDist = .02f;
-                    static float			moveDir = -moveDist;
 
-                    static GLib::Point2D	Offset = { 180.0f, -100.0f };
-
-                    if (Offset.x > 200.0f)
-                        moveDir = -moveDist;
-                    else if (Offset.x < 160.0f)
-                        moveDir = moveDist;
-
-                    Offset.x += moveDir;
+                    MovetoTarget(BadOffset, GoodOffset, moveDist);
 
                     // Tell GLib to render this sprite at our calculated location
-                    GLib::Render(*pBadGuy, Offset, 0.0f, 0.0f);
+                    GLib::Render(*pBadGuy, BadOffset, 0.0f, 0.0f);
                 }
 
                 // Tell GLib we're done rendering sprites
@@ -169,7 +200,7 @@ int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_l
                 // IMPORTANT: Tell GLib we're done rendering
                 GLib::EndRendering();
             }
-        } while (bQuit == false);
+        } while (g_bQuit == false);
 
         if (pGoodGuy)
             GLib::Release(pGoodGuy);
@@ -261,6 +292,49 @@ void* LoadFile(const char* i_pFilename, size_t& o_sizeFile)
     o_sizeFile = FileSize;
 
     return pBuffer;
+}
+
+void MovetoTarget(GLib::Point2D& start, GLib::Point2D target, float moveDist) {
+    int r = rand() % 100;
+    bool moveX = false;
+    bool moveY = false;
+    if (target.x != start.x) moveX = true;
+    if (target.y != start.y) moveY = true;
+
+    if (moveX && moveY) {
+        if (r < 50) {
+            if (target.x < start.x) {
+                start.x -= moveDist;
+            }
+            else {
+                start.x += moveDist;
+            }
+        }
+        else {
+            if (target.y < start.y) {
+                start.y -= moveDist;
+            }
+            else {
+                start.y += moveDist;
+            }
+        }
+    }
+    else if (moveX) {
+        if (target.x < start.x) {
+            start.x -= moveDist;
+        }
+        else {
+            start.x += moveDist;
+        }
+    }
+    else if (moveY) {
+        if (target.y < start.y) {
+            start.y -= moveDist;
+        }
+        else {
+            start.y += moveDist;
+        }
+    }
 }
 
 
