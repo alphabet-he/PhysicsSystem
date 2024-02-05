@@ -1,6 +1,6 @@
 #include "PhysicsSystem.h"
 
-void PhysicsSystem::Update(GameObject* go, TimeSystem* GameTimeSystem)
+void PhysicsSystem::Update(GameObject* go, TimeSystem* GameTimeSystem) const
 {
 	PhysicsComponent* physics = static_cast<PhysicsComponent*>(go->GetComponent("PhysicsComponent"));
 	MovableComponent* movable = static_cast<MovableComponent*>(go->GetComponent("MovableComponent"));
@@ -28,30 +28,7 @@ void PhysicsSystem::Update(GameObject* go, TimeSystem* GameTimeSystem)
 	}
 }
 
-void PhysicsSystem::CreatePhysicsComponent(GameObject* go, Point2D kDrag, float mass)
-{
-	PhysicsComponent* physics = new PhysicsComponent;
-	physics->kDrag = kDrag;
-	physics->Mass = mass;
-	go->AddComponent("PhysicsComponent", physics);
-}
 
-void PhysicsSystem::AddForce(GameObject* go, Point2D force)
-{
-	PhysicsComponent* physics = static_cast<PhysicsComponent*>(go->GetComponent("PhysicsComponent"));
-	physics->kDrag += force;
-}
 
-void PhysicsSystem::ReleaseXForce(GameObject* go)
-{
-	PhysicsComponent* physics = static_cast<PhysicsComponent*>(go->GetComponent("PhysicsComponent"));
-	physics->kDrag.x = 0;
-}
-
-void PhysicsSystem::ReleaseYForce(GameObject* go)
-{
-	PhysicsComponent* physics = static_cast<PhysicsComponent*>(go->GetComponent("PhysicsComponent"));
-	physics->kDrag.y = 0;
-}
 
 

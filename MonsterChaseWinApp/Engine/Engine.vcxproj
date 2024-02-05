@@ -33,7 +33,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FunctionLib.cpp" />
-    <ClCompile Include="MovableSystem.cpp" />
     <ClCompile Include="PhysicsSystem.cpp" />
     <ClCompile Include="RandomNum.cpp" />
     <ClCompile Include="RenderSystem.cpp" />

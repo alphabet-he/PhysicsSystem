@@ -74,8 +74,5 @@
     <ClCompile Include="FunctionLib.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MovableSystem.cpp">
-      <Filter>Source Files\Systems</Filter>
-    </ClCompile>
   </ItemGroup>
 </Project>
