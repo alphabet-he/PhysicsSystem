@@ -1,14 +1,12 @@
 #include "Main.h"
-#include "Monster.h"
-#include "Player.h"
-#include "LinkedList.h"
 #include "RandomNum.h"
-#include "Point2DUnitTest.h"
+#include <TimeSystem.h>
 
 #include <assert.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <Windows.h>
+#include <ctime>
 
 #include <DirectXColors.h>
 
@@ -18,6 +16,11 @@
 #endif // _DEBUG
 
 #include "GLib.h"
+#include <GameObject.h>
+#include <PhysicsSystem.h>
+#include <RenderSystem.h>
+#include "Point2D.h"
+#include <MovableSystem.h>
 
 
 
@@ -35,14 +38,20 @@ static float  playerMoveDist = 10.0f;
 static int windowWidth = 800;
 static int windowHeight = 600;
 
-static GLib::Point2D playerStart = { -180.0f, -100.0f };
-static GLib::Point2D monsterStart = { 180.0f, -100.0f };
+static Point2D playerStart = { -180.0f, -100.0f };
+static Point2D monsterStart = { 180.0f, -100.0f };
+
+static GameObject* Player;
+static TimeSystem* GameTimeSystem;
+static PhysicsSystem* GamePhysicsSystem;
+static RenderSystem* GameRenderSystem;
+static MovableSystem* GameMovableSystem;
 
 bool g_bQuit = false;
 
-GLib::Point2D playerTarget = playerStart;
+Point2D playerTarget = playerStart;
 
-
+/*
 char* enterName()
 {
     char* str;
@@ -98,12 +107,13 @@ void printMonster(Linkedlist list) {
         
     }
 }
+*/
 
 
-void* LoadFile(const char* i_pFilename, size_t& o_sizeFile);
-GLib::Sprite* CreateSprite(const char* i_pFilename);
+//void* LoadFile(const char* i_pFilename, size_t& o_sizeFile);
+//GLib::Sprite* CreateSprite(const char* i_pFilename);
 
-void MovetoTarget(GLib::Point2D& start, GLib::Point2D target, float moveDist);
+void MovetoTarget(Point2D& start, Point2D target, float moveDist);
 
 void TestKeyCallback(unsigned int i_VKeyID, bool bWentDown)
 {
@@ -122,29 +132,59 @@ void TestKeyCallback(unsigned int i_VKeyID, bool bWentDown)
         g_bQuit = true; 
     }
 
-    if (i_VKeyID == 'W' && bWentDown)
+    if (i_VKeyID == 'W')
     {
-        playerTarget.y = min(windowHeight/2, playerTarget.y + playerMoveDist);
+        if (bWentDown) {
+            //playerTarget.y = min(windowHeight/2, playerTarget.y + playerMoveDist);
+            GamePhysicsSystem->AddForce(Player, Point2D({ 0, 1000 }));
+        }
+        else {
+            GamePhysicsSystem->AddForce(Player, Point2D({ 0, -1000 }));
+        }
+        
     }
 
-    if (i_VKeyID == 'A' && bWentDown)
+
+    if (i_VKeyID == 'A')
     {
-        playerTarget.x = max(-windowWidth/2, playerTarget.x - playerMoveDist);
+        if (bWentDown) {
+            //playerTarget.x = max(-windowWidth/2, playerTarget.x - playerMoveDist);
+            GamePhysicsSystem->AddForce(Player, Point2D({ -10000, 0 }));
+        }
+        else {
+            GamePhysicsSystem->AddForce(Player, Point2D({ 10000, 0 }));
+        }
+        
     }
 
-    if (i_VKeyID == 'S' && bWentDown)
+    if (i_VKeyID == 'S')
     {
-        playerTarget.y = max(-windowHeight/2, playerTarget.y - playerMoveDist);
+        if (bWentDown) {
+            //playerTarget.y = max(-windowHeight/2, playerTarget.y - playerMoveDist);
+            GamePhysicsSystem->AddForce(Player, Point2D({ 0, -10000 }));
+        }
+        else {
+            GamePhysicsSystem->AddForce(Player, Point2D({ 0, 10000 }));
+        }
     }
 
-    if (i_VKeyID == 'D' && bWentDown)
+    if (i_VKeyID == 'D')
     {
-        playerTarget.x = min(windowWidth/2, playerTarget.x + playerMoveDist);
+        if (bWentDown) {
+            //playerTarget.x = min(windowWidth / 2, playerTarget.x + playerMoveDist);
+            GamePhysicsSystem->AddForce(Player, Point2D({ 10000, 0 }));
+        }
+        else {
+            //playerTarget.x = min(windowWidth / 2, playerTarget.x + playerMoveDist);
+            GamePhysicsSystem->AddForce(Player, Point2D({ -10000, 0 }));
+        }
+        
     }
 }
 
 int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_lpCmdLine, int i_nCmdShow)
 {
+    
     // random seed
     srand(time(0));
 
@@ -157,9 +197,19 @@ int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_l
         GLib::SetKeyStateChangeCallback(TestKeyCallback);
        
 
-        // Create a couple of sprites using our own helper routine CreateSprite
-        GLib::Sprite* pGoodGuy = CreateSprite("data\\GoodGuy.dds");
-        GLib::Sprite* pBadGuy = CreateSprite("data\\BadGuy.dds");
+        // Initialize systems
+        GameTimeSystem = new TimeSystem();
+        GamePhysicsSystem = new PhysicsSystem();
+        GameRenderSystem = new RenderSystem();
+        GameMovableSystem = new MovableSystem();
+
+        // Create Player/Monster GameObject
+        Player = new GameObject("Player", playerStart);
+        GameObject* Monster = new GameObject("Monster", monsterStart);
+        GameRenderSystem->CreateRenderComponent(Player, "..\\MonsterChase\\data\\GoodGuy.dds");
+        GameRenderSystem->CreateRenderComponent(Monster, "..\\MonsterChase\\data\\BadGuy.dds");
+        GamePhysicsSystem->CreatePhysicsComponent(Player, Point2D{ 0, 0 }, 1.0f);
+        GameMovableSystem->CreateMovableComponent(Player, Point2D{ 0,0 }, Point2D{ 0,0 });
 
         do
         {
@@ -168,44 +218,51 @@ int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_l
 
             if (!g_bQuit)
             {
-                static GLib::Point2D	GoodOffset = playerStart;
-                static GLib::Point2D	BadOffset = monsterStart;
+                //static GLib::Point2D	GoodOffset = playerStart.ToGlibPoint2D();
+                //static GLib::Point2D	BadOffset = monsterStart.ToGlibPoint2D();
 
                 // IMPORTANT: Tell GLib that we want to start rendering
                 GLib::BeginRendering(DirectX::Colors::Blue);
                 // Tell GLib that we want to render some sprites
                 GLib::Sprites::BeginRendering();
 
-                if (pGoodGuy)
+                if (Player && Player->GetComponent("RenderComponent") != nullptr)
                 {
                     static float			moveDist = .03f;
                     
-                    MovetoTarget(GoodOffset, playerTarget, moveDist);
+                    //MovetoTarget(Player->Position, playerTarget, moveDist);
 
                     // Tell GLib to render this sprite at our calculated location
-                    GLib::Render(*pGoodGuy, GoodOffset, 0.0f, 0.0f);
+                    //GLib::Render(*pGoodGuy, GoodOffset, 0.0f, 0.0f);
+
+                    GamePhysicsSystem->Update(Player, GameTimeSystem);
                 }
-                if (pBadGuy)
+                if (Monster && Monster->GetComponent("RenderComponent") != nullptr)
                 {
                     static float			moveDist = .02f;
 
-                    MovetoTarget(BadOffset, GoodOffset, moveDist);
+                    MovetoTarget(Monster->Position, Player->Position, moveDist);
 
                     // Tell GLib to render this sprite at our calculated location
-                    GLib::Render(*pBadGuy, BadOffset, 0.0f, 0.0f);
+                    //GLib::Render(*pBadGuy, BadOffset, 0.0f, 0.0f);
                 }
+
+                // Render sprites
+                GameRenderSystem->RenderAll();
 
                 // Tell GLib we're done rendering sprites
                 GLib::Sprites::EndRendering();
                 // IMPORTANT: Tell GLib we're done rendering
                 GLib::EndRendering();
+
+                // update time system
+                GameTimeSystem->Update();
             }
         } while (g_bQuit == false);
+        
 
-        if (pGoodGuy)
-            GLib::Release(pGoodGuy);
-        if (pBadGuy)
-            GLib::Release(pBadGuy);
+        // release sprite
+        GameRenderSystem->ReleaseAll();
 
         // IMPORTANT:  Tell GLib to shutdown, releasing resources.
         GLib::Shutdown();
@@ -216,7 +273,7 @@ int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_l
 #endif // _DEBUG
 
 }
-
+/*
 GLib::Sprite* CreateSprite(const char* i_pFilename)
 {
     assert(i_pFilename);
@@ -293,8 +350,8 @@ void* LoadFile(const char* i_pFilename, size_t& o_sizeFile)
 
     return pBuffer;
 }
-
-void MovetoTarget(GLib::Point2D& start, GLib::Point2D target, float moveDist) {
+*/
+void MovetoTarget(Point2D& start, Point2D target, float moveDist) {
     int r = rand() % 100;
     bool moveX = false;
     bool moveY = false;

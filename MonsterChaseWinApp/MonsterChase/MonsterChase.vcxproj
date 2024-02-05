@@ -163,14 +163,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Monster.h" />
-    <ClInclude Include="Player.h" />
-    <ClInclude Include="Point2DUnitTest.h" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="Monster.cpp" />
-    <ClCompile Include="Point2DUnitTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Engine\Engine.vcxproj">
