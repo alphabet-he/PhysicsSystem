@@ -141,7 +141,6 @@ void TestKeyCallback(unsigned int i_VKeyID, bool bWentDown)
         else {
             GamePhysicsSystem->AddForce(Player, Point2D({ 0, -1000 }));
         }
-        
     }
 
 
