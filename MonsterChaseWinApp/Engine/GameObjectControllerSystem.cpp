@@ -27,6 +27,13 @@ namespace Engine
 			PlayerControllerList.insert({ jsonData["name"], pc });
 		}
 
+		void ReleaseAll()
+		{
+			for (auto it = PlayerControllerList.begin(); it != PlayerControllerList.end(); it++) {
+				delete it->second;
+			}
+		}
+
 	}
 
 }

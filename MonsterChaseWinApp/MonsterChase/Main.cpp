@@ -1,6 +1,3 @@
-#include "Main.h"
-#include "RandomNum.h"
-
 #include <assert.h>
 #include <stdio.h>
 #include <stdint.h>
@@ -11,6 +8,7 @@
 
 #if defined _DEBUG
 #define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
 #include <crtdbg.h>
 #endif // _DEBUG
 
@@ -19,29 +17,12 @@
 #include "Point2D.h"
 #include <GameState.h>
 
-
-#define mapsize 64
-#define possibleInputs 'a', \
-            's', \
-            'd', \
-            'w', \
-            'm', \
-            'n'
-
-
-static float  playerMoveDist = 10.0f;
-
 static int windowWidth = 800;
 static int windowHeight = 600;
-
-static Point2D playerStart = { -180.0f, -100.0f };
-static Point2D monsterStart = { 180.0f, -100.0f };
 
 static GameObject* Player;
 
 bool g_bQuit = false;
-
-Point2D playerTarget = playerStart;
 
 /*
 char* enterName()
@@ -109,75 +90,10 @@ using namespace Engine;
 
 void MovetoTarget(Point2D& start, Point2D target, float moveDist);
 
-void TestKeyCallback(unsigned int i_VKeyID, bool bWentDown)
-{
-#ifdef _DEBUG
-    const size_t	lenBuffer = 65;
-    char			Buffer[lenBuffer];
-
-    sprintf_s(Buffer, lenBuffer, "VKey 0x%04x went %s\n", i_VKeyID, bWentDown ? "down" : "up");
-    OutputDebugStringA(Buffer);
-#endif // __DEBUG
-
-
-    // Check if the 'q' key was pressed
-    if (i_VKeyID == 'Q' && bWentDown)
-    {
-        g_bQuit = true; 
-    }
-
-    if (i_VKeyID == 'W')
-    {
-        if (bWentDown) {
-            //playerTarget.y = min(windowHeight/2, playerTarget.y + playerMoveDist);
-            PhysicsSystem::AddForce(Player, Point2D({ 0, 1000 }));
-        }
-        else {
-            PhysicsSystem::AddForce(Player, Point2D({ 0, -1000 }));
-        }
-    }
-
-
-    if (i_VKeyID == 'A')
-    {
-        if (bWentDown) {
-            //playerTarget.x = max(-windowWidth/2, playerTarget.x - playerMoveDist);
-            PhysicsSystem::AddForce(Player, Point2D({ -10000, 0 }));
-        }
-        else {
-            PhysicsSystem::AddForce(Player, Point2D({ 10000, 0 }));
-        }
-        
-    }
-
-    if (i_VKeyID == 'S')
-    {
-        if (bWentDown) {
-            //playerTarget.y = max(-windowHeight/2, playerTarget.y - playerMoveDist);
-            PhysicsSystem::AddForce(Player, Point2D({ 0, -10000 }));
-        }
-        else {
-            PhysicsSystem::AddForce(Player, Point2D({ 0, 10000 }));
-        }
-    }
-
-    if (i_VKeyID == 'D')
-    {
-        if (bWentDown) {
-            //playerTarget.x = min(windowWidth / 2, playerTarget.x + playerMoveDist);
-            PhysicsSystem::AddForce(Player, Point2D({ 10000, 0 }));
-        }
-        else {
-            //playerTarget.x = min(windowWidth / 2, playerTarget.x + playerMoveDist);
-            PhysicsSystem::AddForce(Player, Point2D({ -10000, 0 }));
-        }
-        
-    }
-}
 
 int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_lpCmdLine, int i_nCmdShow)
 {
-    
+
     // random seed
     srand((unsigned int)time(0));
 
@@ -260,8 +176,10 @@ int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_l
         } while (g_bQuit == false);
         
 
-        // release sprite
-        RenderSystem::ReleaseAll();
+        // release memory
+        GameState::ReleaseMemory();
+        delete Monster;
+        delete Player;
 
         // IMPORTANT:  Tell GLib to shutdown, releasing resources.
         GLib::Shutdown();

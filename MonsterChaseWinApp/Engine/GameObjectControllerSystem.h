@@ -12,6 +12,8 @@ namespace Engine
 		void AddToPlayerControllerList(PlayerController* pc);
 
 		void CreatePlayerController(GameObject& gameObject, nlohmann::json& jsonData);
+
+		void ReleaseAll();
 	}
 
 }

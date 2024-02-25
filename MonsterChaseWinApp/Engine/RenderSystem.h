@@ -10,8 +10,6 @@ namespace Engine
 {
 	namespace RenderSystem {
 
-		
-
 		void Init();
 
 		void CreateRenderFromJSON(GameObject& gameObject, nlohmann::json& jsonData);

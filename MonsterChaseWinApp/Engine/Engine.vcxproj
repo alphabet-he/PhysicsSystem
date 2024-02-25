@@ -31,7 +31,6 @@
     <ClInclude Include="PhysicsSystem.h" />
     <ClInclude Include="PlayerController.h" />
     <ClInclude Include="Point2D.h" />
-    <ClInclude Include="RandomNum.h" />
     <ClInclude Include="RenderComponent.h" />
     <ClInclude Include="RenderSystem.h" />
     <ClInclude Include="TimeSystem.h" />
@@ -44,7 +43,6 @@
     <ClCompile Include="MovableSystem.cpp" />
     <ClCompile Include="PhysicsSystem.cpp" />
     <ClCompile Include="PlayerController.cpp" />
-    <ClCompile Include="RandomNum.cpp" />
     <ClCompile Include="RenderSystem.cpp" />
     <ClCompile Include="TimeSystem.cpp" />
   </ItemGroup>

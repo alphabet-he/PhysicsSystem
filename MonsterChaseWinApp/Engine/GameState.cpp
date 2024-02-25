@@ -25,6 +25,13 @@ namespace Engine
 		{
 			g_bQuit = val;
 		}
+
+
+		void ReleaseMemory()
+		{
+			RenderSystem::ReleaseAll();
+			GameObjectController::ReleaseAll();
+		}
 	}
 
 }
