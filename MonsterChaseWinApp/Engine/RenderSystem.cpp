@@ -1,14 +1,27 @@
 #include "RenderSystem.h"
 #include <cassert>
 
-void RenderSystem::RenderAll()
+
+void Engine::RenderSystem::Init() {
+    Engine::GameObjectFactory::RegisterComponentCreatorFunc("render", Engine::RenderSystem::CreateRenderFromJSON);
+}
+
+void Engine::RenderSystem::CreateRenderFromJSON(GameObject& gameObject, nlohmann::json& jsonData)
+{
+    assert(jsonData["sprite_texture_source"].is_string());
+    std::string TextureSource = jsonData["sprite_texture_source"];
+    Engine::RenderSystem::CreateRenderComponent(&gameObject, TextureSource.c_str());
+};
+
+
+void Engine::RenderSystem::RenderAll()
 {
 	for (GameObject* Current : AllRenderables) {
 		Render(Current);
 	}
 }
 
-void RenderSystem::Render(GameObject* go)
+void Engine::RenderSystem::Render(GameObject* go)
 {
 	RenderComponent* render = static_cast<RenderComponent*>(go->GetComponent("RenderComponent"));
 	if (render != nullptr) {
@@ -17,16 +30,18 @@ void RenderSystem::Render(GameObject* go)
 		
 }
 
-void RenderSystem::CreateRenderComponent(GameObject* go, const char* pFilename)
+void Engine::RenderSystem::CreateRenderComponent(GameObject* go, const char* pFilename)
 {
 	RenderComponent* render = new RenderComponent;
-	render->i_pFilename = pFilename;
-    render->Sprite = CreateSprite(pFilename);
+    std::string basePath = "..\\MonsterChase\\";
+    std::string newFileName = basePath + pFilename;
+	render->i_pFilename = newFileName.c_str();
+    render->Sprite = Engine::RenderSystem::CreateSprite(newFileName.c_str());
     go->AddComponent("RenderComponent", render);
     AllRenderables.push_back(go);
 }
 
-void RenderSystem::ReleaseAll() {
+void Engine::RenderSystem::ReleaseAll() {
     for (GameObject* Current : AllRenderables) {
         RenderComponent* render = static_cast<RenderComponent*>(Current->GetComponent("RenderComponent"));
         if (render != nullptr) {
@@ -35,7 +50,7 @@ void RenderSystem::ReleaseAll() {
     }
 }
 
-GLib::Sprite* RenderSystem::CreateSprite(const char* i_pFilename)
+GLib::Sprite* Engine::RenderSystem::CreateSprite(const char* i_pFilename)
 {
     assert(i_pFilename);
 

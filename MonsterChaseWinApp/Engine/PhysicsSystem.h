@@ -3,31 +3,28 @@
 #include "PhysicsComponent.h"
 #include "MovableComponent.h"
 #include "TimeSystem.h"
+#include "nlohmann/json.hpp"
+#include "GameObjectFactory.h"
 
-class PhysicsSystem {
+namespace Engine {
 
-public:
-	void Update(GameObject* go, TimeSystem* GameTimeSystem) const;
+	namespace PhysicsSystem {
 
+		void Init();
+		
+		void Update(GameObject* go);
 
-	void CreatePhysicsComponent(GameObject* go, Point2D kDrag, float mass) const {
-		PhysicsComponent* physics = new PhysicsComponent;
-		physics->kDrag = kDrag;
-		physics->Mass = mass;
-		go->AddComponent("PhysicsComponent", physics);
-	};
+		void CreatePhysicsFromJSON(GameObject& gameObject, nlohmann::json& jsonData);
 
-	inline void AddForce(GameObject* go, Point2D force) const {
-		PhysicsComponent* physics = static_cast<PhysicsComponent*>(go->GetComponent("PhysicsComponent"));
-		physics->kDrag += force;
-	};
+		void CreatePhysicsComponent(GameObject& go, Point2D kDrag, float mass);
 
-	inline void ReleaseXForce(GameObject* go) const {
-		PhysicsComponent* physics = static_cast<PhysicsComponent*>(go->GetComponent("PhysicsComponent"));
-		physics->kDrag.x = 0;
-	};
-	void ReleaseYForce(GameObject* go) const {
-		PhysicsComponent* physics = static_cast<PhysicsComponent*>(go->GetComponent("PhysicsComponent"));
-		physics->kDrag.y = 0;
-	};
-};
+		
+		void AddForce(GameObject* go, Point2D force);
+
+		void ReleaseXForce(GameObject* go);
+		void ReleaseYForce(GameObject* go);
+		
+	}
+
+}
+

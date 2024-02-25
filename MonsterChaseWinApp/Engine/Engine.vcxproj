@@ -21,6 +21,8 @@
   <ItemGroup>
     <ClInclude Include="FunctionLib.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="GameObjectFactory.h" />
+    <ClInclude Include="LoadFileToBuffer.h" />
     <ClInclude Include="MovableComponent.h" />
     <ClInclude Include="MovableSystem.h" />
     <ClInclude Include="PhysicsComponent.h" />
@@ -33,6 +35,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FunctionLib.cpp" />
+    <ClCompile Include="GameObjectFactory.cpp" />
+    <ClCompile Include="LoadFileToBuffer.cpp" />
+    <ClCompile Include="MovableSystem.cpp" />
     <ClCompile Include="PhysicsSystem.cpp" />
     <ClCompile Include="RandomNum.cpp" />
     <ClCompile Include="RenderSystem.cpp" />

@@ -42,10 +42,6 @@ static Point2D playerStart = { -180.0f, -100.0f };
 static Point2D monsterStart = { 180.0f, -100.0f };
 
 static GameObject* Player;
-static TimeSystem* GameTimeSystem;
-static PhysicsSystem* GamePhysicsSystem;
-static RenderSystem* GameRenderSystem;
-static MovableSystem* GameMovableSystem;
 
 bool g_bQuit = false;
 
@@ -113,6 +109,8 @@ void printMonster(Linkedlist list) {
 //void* LoadFile(const char* i_pFilename, size_t& o_sizeFile);
 //GLib::Sprite* CreateSprite(const char* i_pFilename);
 
+using namespace Engine;
+
 void MovetoTarget(Point2D& start, Point2D target, float moveDist);
 
 void TestKeyCallback(unsigned int i_VKeyID, bool bWentDown)
@@ -136,10 +134,10 @@ void TestKeyCallback(unsigned int i_VKeyID, bool bWentDown)
     {
         if (bWentDown) {
             //playerTarget.y = min(windowHeight/2, playerTarget.y + playerMoveDist);
-            GamePhysicsSystem->AddForce(Player, Point2D({ 0, 1000 }));
+            PhysicsSystem::AddForce(Player, Point2D({ 0, 1000 }));
         }
         else {
-            GamePhysicsSystem->AddForce(Player, Point2D({ 0, -1000 }));
+            PhysicsSystem::AddForce(Player, Point2D({ 0, -1000 }));
         }
     }
 
@@ -148,10 +146,10 @@ void TestKeyCallback(unsigned int i_VKeyID, bool bWentDown)
     {
         if (bWentDown) {
             //playerTarget.x = max(-windowWidth/2, playerTarget.x - playerMoveDist);
-            GamePhysicsSystem->AddForce(Player, Point2D({ -10000, 0 }));
+            PhysicsSystem::AddForce(Player, Point2D({ -10000, 0 }));
         }
         else {
-            GamePhysicsSystem->AddForce(Player, Point2D({ 10000, 0 }));
+            PhysicsSystem::AddForce(Player, Point2D({ 10000, 0 }));
         }
         
     }
@@ -160,10 +158,10 @@ void TestKeyCallback(unsigned int i_VKeyID, bool bWentDown)
     {
         if (bWentDown) {
             //playerTarget.y = max(-windowHeight/2, playerTarget.y - playerMoveDist);
-            GamePhysicsSystem->AddForce(Player, Point2D({ 0, -10000 }));
+            PhysicsSystem::AddForce(Player, Point2D({ 0, -10000 }));
         }
         else {
-            GamePhysicsSystem->AddForce(Player, Point2D({ 0, 10000 }));
+            PhysicsSystem::AddForce(Player, Point2D({ 0, 10000 }));
         }
     }
 
@@ -171,11 +169,11 @@ void TestKeyCallback(unsigned int i_VKeyID, bool bWentDown)
     {
         if (bWentDown) {
             //playerTarget.x = min(windowWidth / 2, playerTarget.x + playerMoveDist);
-            GamePhysicsSystem->AddForce(Player, Point2D({ 10000, 0 }));
+            PhysicsSystem::AddForce(Player, Point2D({ 10000, 0 }));
         }
         else {
             //playerTarget.x = min(windowWidth / 2, playerTarget.x + playerMoveDist);
-            GamePhysicsSystem->AddForce(Player, Point2D({ -10000, 0 }));
+            PhysicsSystem::AddForce(Player, Point2D({ -10000, 0 }));
         }
         
     }
@@ -197,19 +195,21 @@ int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_l
        
 
         // Initialize systems
-        GameTimeSystem = new TimeSystem();
-        GamePhysicsSystem = new PhysicsSystem();
-        GameRenderSystem = new RenderSystem();
-        GameMovableSystem = new MovableSystem();
+        TimeSystem::Init();
+        RenderSystem::Init();
+        PhysicsSystem::Init();
+        MovableSystem::Init();
 
         // Create Player/Monster GameObject
         Player = new GameObject("Player", playerStart);
         GameObject* Monster = new GameObject("Monster", monsterStart);
+        /*
         GameRenderSystem->CreateRenderComponent(Player, "..\\MonsterChase\\data\\GoodGuy.dds");
         GameRenderSystem->CreateRenderComponent(Monster, "..\\MonsterChase\\data\\BadGuy.dds");
         GamePhysicsSystem->CreatePhysicsComponent(Player, Point2D{ 0, 0 }, 1.0f);
         GameMovableSystem->CreateMovableComponent(Player, Point2D{ 0,0 }, Point2D{ 0,0 });
-
+        */
+        GameObjectFactory::CreateGameObject("data\\Player.json");
         do
         {
             // IMPORTANT: We need to let GLib do it's thing. 
@@ -234,7 +234,7 @@ int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_l
                     // Tell GLib to render this sprite at our calculated location
                     //GLib::Render(*pGoodGuy, GoodOffset, 0.0f, 0.0f);
 
-                    GamePhysicsSystem->Update(Player, GameTimeSystem);
+                    PhysicsSystem::Update(Player);
                 }
                 if (Monster && Monster->GetComponent("RenderComponent") != nullptr)
                 {
@@ -247,7 +247,7 @@ int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_l
                 }
 
                 // Render sprites
-                GameRenderSystem->RenderAll();
+                RenderSystem::RenderAll();
 
                 // Tell GLib we're done rendering sprites
                 GLib::Sprites::EndRendering();
@@ -255,13 +255,13 @@ int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_l
                 GLib::EndRendering();
 
                 // update time system
-                GameTimeSystem->Update();
+                TimeSystem::Update();
             }
         } while (g_bQuit == false);
         
 
         // release sprite
-        GameRenderSystem->ReleaseAll();
+        RenderSystem::ReleaseAll();
 
         // IMPORTANT:  Tell GLib to shutdown, releasing resources.
         GLib::Shutdown();

@@ -4,18 +4,27 @@
 #include "FunctionLib.h"
 #include <GLib.h>
 #include <vector>
+#include "nlohmann/json.hpp"
+#include "GameObjectFactory.h"
 
-
-class RenderSystem
+namespace Engine 
 {
-public:
-	void RenderAll();
-	void Render(GameObject* go);
-	void CreateRenderComponent(GameObject* go, const char* pFilename);
-	void ReleaseAll();
+	namespace RenderSystem {
 
-private:
-	std::vector<GameObject*> AllRenderables;
-	GLib::Sprite* CreateSprite(const char* i_pFilename);
-};
+		std::vector<GameObject*> AllRenderables;
+
+		void Init();
+
+		void CreateRenderFromJSON(GameObject& gameObject, nlohmann::json& jsonData);
+
+		void RenderAll();
+		void Render(GameObject* go);
+		void CreateRenderComponent(GameObject* go, const char* pFilename);
+		void ReleaseAll();
+
+		GLib::Sprite* CreateSprite(const char* i_pFilename);
+	}
+
+}
+
 

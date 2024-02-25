@@ -25,6 +25,12 @@
     <Filter Include="Source Files\Systems">
       <UniqueIdentifier>{767a3705-9ff8-4fd5-8d28-438435f967d6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\GameObjectFactory">
+      <UniqueIdentifier>{3801c9b9-cccb-4dcc-845c-8ca16d8b740d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GameObjectFactory">
+      <UniqueIdentifier>{2f44adbe-8a91-4028-afc2-e41341d8bd61}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Point2D.h">
@@ -60,6 +66,12 @@
     <ClInclude Include="MovableSystem.h">
       <Filter>Header Files\Systems</Filter>
     </ClInclude>
+    <ClInclude Include="GameObjectFactory.h">
+      <Filter>Header Files\GameObjectFactory</Filter>
+    </ClInclude>
+    <ClInclude Include="LoadFileToBuffer.h">
+      <Filter>Header Files\GameObjectFactory</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="RandomNum.cpp">
@@ -73,6 +85,15 @@
     </ClCompile>
     <ClCompile Include="FunctionLib.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObjectFactory.cpp">
+      <Filter>Source Files\GameObjectFactory</Filter>
+    </ClCompile>
+    <ClCompile Include="LoadFileToBuffer.cpp">
+      <Filter>Source Files\GameObjectFactory</Filter>
+    </ClCompile>
+    <ClCompile Include="MovableSystem.cpp">
+      <Filter>Source Files\Systems</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

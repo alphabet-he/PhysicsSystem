@@ -2,20 +2,23 @@
 
 #include <Windows.h>
 
-class TimeSystem
+namespace Engine 
 {
-public:
-	_LARGE_INTEGER GameStartTime;
-	_LARGE_INTEGER LastRecordedTime;
-	LARGE_INTEGER Frequency;
+	namespace TimeSystem {
 
-	TimeSystem() {
-		QueryPerformanceFrequency(&Frequency);
-		QueryPerformanceCounter(&GameStartTime);
-		LastRecordedTime = GameStartTime;
+		_LARGE_INTEGER GameStartTime;
+		_LARGE_INTEGER LastRecordedTime;
+		LARGE_INTEGER Frequency;
+
+		inline void Init() {
+			QueryPerformanceFrequency(&Frequency);
+			QueryPerformanceCounter(&GameStartTime);
+			LastRecordedTime = GameStartTime;
+		}
+
+		inline void Update() {
+			QueryPerformanceCounter(&LastRecordedTime);
+		}
 	}
 
-	inline void Update() {
-		QueryPerformanceCounter(&LastRecordedTime);
-	}
-};
+}
