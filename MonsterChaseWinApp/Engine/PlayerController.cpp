@@ -1,6 +1,7 @@
 #include "PlayerController.h"
 #include "GameObjectControllerSystem.h"
 #include "PhysicsSystem.h"
+#include "GameState.h"
 
 using namespace Engine;
 
@@ -30,7 +31,7 @@ void PlayerController::PlayerKeyCallback(unsigned int i_VKeyID, bool bWentDown)
 
     if (i_VKeyID == 'Q' && bWentDown)
     {
-        GameObjectController::setQuit(true);
+        GameState::setQuit(true);
     }
 
     if (i_VKeyID == 'W')

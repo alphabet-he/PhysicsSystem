@@ -7,9 +7,6 @@ namespace Engine
 {
 	namespace GameObjectController {
 
-		// quit boolean
-		bool g_quit = false;
-
 		// list of all game object controllers
 		std::map<std::string, PlayerController*> PlayerControllerList;
 		// might be AIs, I'm not sure
@@ -30,14 +27,6 @@ namespace Engine
 			PlayerControllerList.insert({ jsonData["name"], pc });
 		}
 
-		void setQuit(bool value)
-		{
-			g_quit = value;
-		}
-		bool& getQuit()
-		{
-			return g_quit;
-		}
 	}
 
 }

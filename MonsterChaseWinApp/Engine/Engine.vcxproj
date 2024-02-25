@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="GameState.h" />
     <ClInclude Include="LoadFile.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameObjectControllerSystem.h" />
@@ -38,6 +39,7 @@
   <ItemGroup>
     <ClCompile Include="GameObjectControllerSystem.cpp" />
     <ClCompile Include="GameObjectFactory.cpp" />
+    <ClCompile Include="GameState.cpp" />
     <ClCompile Include="LoadFileToBuffer.cpp" />
     <ClCompile Include="MovableSystem.cpp" />
     <ClCompile Include="PhysicsSystem.cpp" />

@@ -1,6 +1,5 @@
 #include "Main.h"
 #include "RandomNum.h"
-#include <TimeSystem.h>
 
 #include <assert.h>
 #include <stdio.h>
@@ -17,13 +16,8 @@
 
 #include "GLib.h"
 #include <GameObject.h>
-#include <PhysicsSystem.h>
-#include <RenderSystem.h>
 #include "Point2D.h"
-#include <MovableSystem.h>
-#include <PlayerController.h>
-#include <GameObjectControllerSystem.h>
-
+#include <GameState.h>
 
 
 #define mapsize 64
@@ -197,11 +191,7 @@ int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_l
        
         
         // Initialize systems
-        GameObjectController::Init();
-        TimeSystem::Init();
-        RenderSystem::Init();
-        PhysicsSystem::Init();
-        MovableSystem::Init();
+        GameState::Init();
 
         // Create Player/Monster GameObject
         
@@ -262,6 +252,10 @@ int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_l
 
                 // update time system
                 TimeSystem::Update();
+
+                // update g_bQuit
+                g_bQuit = GameState::getQuit();
+
             }
         } while (g_bQuit == false);
         
