@@ -6,19 +6,16 @@ namespace Engine
 {
 	namespace TimeSystem {
 
-		_LARGE_INTEGER GameStartTime;
-		_LARGE_INTEGER LastRecordedTime;
-		LARGE_INTEGER Frequency;
 
-		inline void Init() {
-			QueryPerformanceFrequency(&Frequency);
-			QueryPerformanceCounter(&GameStartTime);
-			LastRecordedTime = GameStartTime;
-		}
+		void Init();
 
-		inline void Update() {
-			QueryPerformanceCounter(&LastRecordedTime);
-		}
+		void Update();
+
+		_LARGE_INTEGER GetGameStartTime();
+
+		_LARGE_INTEGER GetLastRecordedTime();
+
+		_LARGE_INTEGER GetFrequency();
 	}
 
 }

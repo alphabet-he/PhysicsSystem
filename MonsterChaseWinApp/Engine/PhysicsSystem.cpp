@@ -12,8 +12,8 @@ void Engine::PhysicsSystem::Update(GameObject* go)
 		_LARGE_INTEGER currTime, ElapsedTime;
 		float ElapsedSeconds;
 		QueryPerformanceCounter(&currTime);
-		ElapsedTime.QuadPart = currTime.QuadPart - Engine::TimeSystem::LastRecordedTime.QuadPart;
-		ElapsedSeconds = static_cast<float>(ElapsedTime.QuadPart) / Engine::TimeSystem::Frequency.QuadPart;
+		ElapsedTime.QuadPart = currTime.QuadPart - Engine::TimeSystem::GetLastRecordedTime().QuadPart;
+		ElapsedSeconds = static_cast<float>(ElapsedTime.QuadPart) / Engine::TimeSystem::GetFrequency().QuadPart;
 
 
 		// update velocity

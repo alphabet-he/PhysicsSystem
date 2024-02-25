@@ -31,6 +31,9 @@
     <Filter Include="Source Files\GameObjectFactory">
       <UniqueIdentifier>{2f44adbe-8a91-4028-afc2-e41341d8bd61}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Controller">
+      <UniqueIdentifier>{964b9885-3aa0-45fe-b55d-a772c11a7a48}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Point2D.h">
@@ -60,9 +63,6 @@
     <ClInclude Include="RenderSystem.h">
       <Filter>Header Files\Systems</Filter>
     </ClInclude>
-    <ClInclude Include="FunctionLib.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="MovableSystem.h">
       <Filter>Header Files\Systems</Filter>
     </ClInclude>
@@ -70,6 +70,15 @@
       <Filter>Header Files\GameObjectFactory</Filter>
     </ClInclude>
     <ClInclude Include="LoadFileToBuffer.h">
+      <Filter>Header Files\GameObjectFactory</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerController.h">
+      <Filter>Header Files\Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObjectControllerSystem.h">
+      <Filter>Header Files\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="LoadFile.h">
       <Filter>Header Files\GameObjectFactory</Filter>
     </ClInclude>
   </ItemGroup>
@@ -83,9 +92,6 @@
     <ClCompile Include="RenderSystem.cpp">
       <Filter>Source Files\Systems</Filter>
     </ClCompile>
-    <ClCompile Include="FunctionLib.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="GameObjectFactory.cpp">
       <Filter>Source Files\GameObjectFactory</Filter>
     </ClCompile>
@@ -93,6 +99,15 @@
       <Filter>Source Files\GameObjectFactory</Filter>
     </ClCompile>
     <ClCompile Include="MovableSystem.cpp">
+      <Filter>Source Files\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="TimeSystem.cpp">
+      <Filter>Source Files\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerController.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObjectControllerSystem.cpp">
       <Filter>Source Files\Systems</Filter>
     </ClCompile>
   </ItemGroup>

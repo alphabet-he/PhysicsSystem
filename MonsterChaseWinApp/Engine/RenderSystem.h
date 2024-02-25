@@ -1,7 +1,6 @@
 ﻿#pragma once
 #include "GameObject.h"
 #include "RenderComponent.h"
-#include "FunctionLib.h"
 #include <GLib.h>
 #include <vector>
 #include "nlohmann/json.hpp"
@@ -11,7 +10,7 @@ namespace Engine
 {
 	namespace RenderSystem {
 
-		std::vector<GameObject*> AllRenderables;
+		
 
 		void Init();
 

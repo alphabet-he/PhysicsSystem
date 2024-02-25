@@ -11,8 +11,8 @@
   },
 
   "components": {
-    "renderable": {
-      "sprite_texture_source": "data\\goodguy.dds"
+    "render": {
+      "sprite_texture_source": "data\\GoodGuy.dds"
     },
     "moveable": {
       "velocity": [ 0.0, 0.0 ],

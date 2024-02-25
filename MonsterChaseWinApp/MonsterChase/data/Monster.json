@@ -1,0 +1,12 @@
+{
+  "name": "Monster",
+
+  "position": [ 180.0, -100.0 ],
+
+
+  "components": {
+    "render": {
+      "sprite_texture_source": "data\\BadGuy.dds"
+    }
+  }
+}

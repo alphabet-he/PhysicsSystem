@@ -21,6 +21,8 @@
 #include <RenderSystem.h>
 #include "Point2D.h"
 #include <MovableSystem.h>
+#include <PlayerController.h>
+#include <GameObjectControllerSystem.h>
 
 
 
@@ -191,25 +193,29 @@ int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_l
     if (bSuccess)
     {
         // IMPORTANT (if we want keypress info from GLib): Set a callback for notification of key presses
-        GLib::SetKeyStateChangeCallback(TestKeyCallback);
+        //GLib::SetKeyStateChangeCallback(TestKeyCallback);
        
-
+        
         // Initialize systems
+        GameObjectController::Init();
         TimeSystem::Init();
         RenderSystem::Init();
         PhysicsSystem::Init();
         MovableSystem::Init();
 
         // Create Player/Monster GameObject
-        Player = new GameObject("Player", playerStart);
-        GameObject* Monster = new GameObject("Monster", monsterStart);
+        
         /*
+        GameObject* Monster = new GameObject("Monster", monsterStart);
+        
         GameRenderSystem->CreateRenderComponent(Player, "..\\MonsterChase\\data\\GoodGuy.dds");
         GameRenderSystem->CreateRenderComponent(Monster, "..\\MonsterChase\\data\\BadGuy.dds");
         GamePhysicsSystem->CreatePhysicsComponent(Player, Point2D{ 0, 0 }, 1.0f);
         GameMovableSystem->CreateMovableComponent(Player, Point2D{ 0,0 }, Point2D{ 0,0 });
         */
-        GameObjectFactory::CreateGameObject("data\\Player.json");
+        Player = GameObjectFactory::CreateGameObject("data\\Player.json");
+        GameObject* Monster = GameObjectFactory::CreateGameObject("data\\Monster.json");
+
         do
         {
             // IMPORTANT: We need to let GLib do it's thing. 
@@ -238,7 +244,7 @@ int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_l
                 }
                 if (Monster && Monster->GetComponent("RenderComponent") != nullptr)
                 {
-                    static float			moveDist = .02f;
+                    static float			moveDist = .005f;
 
                     MovetoTarget(Monster->Position, Player->Position, moveDist);
 
