@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <Windows.h>
 #include <ctime>
+#include <memory>
 
 #include <DirectXColors.h>
 
@@ -19,8 +20,6 @@
 
 static int windowWidth = 800;
 static int windowHeight = 600;
-
-static GameObject* Player;
 
 bool g_bQuit = false;
 
@@ -119,8 +118,8 @@ int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_l
         GamePhysicsSystem->CreatePhysicsComponent(Player, Point2D{ 0, 0 }, 1.0f);
         GameMovableSystem->CreateMovableComponent(Player, Point2D{ 0,0 }, Point2D{ 0,0 });
         */
-        Player = GameObjectFactory::CreateGameObject("data\\Player.json");
-        GameObject* Monster = GameObjectFactory::CreateGameObject("data\\Monster.json");
+        std::shared_ptr<GameObject> Player = GameObjectFactory::CreateGameObject("data\\Player.json");
+        std::shared_ptr<GameObject> Monster = GameObjectFactory::CreateGameObject("data\\Monster.json");
 
         do
         {
@@ -178,8 +177,8 @@ int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_l
 
         // release memory
         GameState::ReleaseMemory();
-        delete Monster;
-        delete Player;
+        Player = nullptr;
+        Monster = nullptr;
 
         // IMPORTANT:  Tell GLib to shutdown, releasing resources.
         GLib::Shutdown();

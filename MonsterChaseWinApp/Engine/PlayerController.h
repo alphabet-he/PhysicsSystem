@@ -1,13 +1,14 @@
 #pragma once
 #include <string>
 #include "GameObject.h"
+#include <memory>
 
 
 class PlayerController 
 {
 public:
 	PlayerController();
-	PlayerController(GameObject* go, std::string name);
+	PlayerController(std::shared_ptr<GameObject> go, std::string name);
 
 private:
 	void PlayerKeyCallback(unsigned int i_VKeyID, bool bWentDown);
@@ -15,7 +16,7 @@ private:
 public:
 	std::string PlayerName = "";
 
-	GameObject* PlayerObject = nullptr;
+	std::shared_ptr<GameObject> PlayerObject = nullptr;
 
 
 };

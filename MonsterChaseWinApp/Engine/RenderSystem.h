@@ -5,6 +5,7 @@
 #include <vector>
 #include "nlohmann/json.hpp"
 #include "GameObjectFactory.h"
+#include <memory>
 
 namespace Engine 
 {
@@ -12,11 +13,11 @@ namespace Engine
 
 		void Init();
 
-		void CreateRenderFromJSON(GameObject& gameObject, nlohmann::json& jsonData);
+		void CreateRenderFromJSON(std::shared_ptr<GameObject> gameObject, nlohmann::json& jsonData);
 
 		void RenderAll();
-		void Render(GameObject* go);
-		void CreateRenderComponent(GameObject* go, const char* pFilename);
+		void Render(std::shared_ptr<GameObject> go);
+		void CreateRenderComponent(std::shared_ptr<GameObject> go, const char* pFilename);
 		void ReleaseAll();
 
 		GLib::Sprite* CreateSprite(const char* i_pFilename);

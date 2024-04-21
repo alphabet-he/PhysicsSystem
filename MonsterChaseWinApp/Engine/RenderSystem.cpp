@@ -5,29 +5,38 @@
 namespace Engine {
     namespace RenderSystem {
 
-        std::vector<GameObject*> AllRenderables;
+        std::vector<std::weak_ptr<GameObject>> AllRenderables;
 
 
         void Init() {
             GameObjectFactory::RegisterComponentCreatorFunc("render", CreateRenderFromJSON);
         }
 
-        void CreateRenderFromJSON(GameObject& gameObject, nlohmann::json& jsonData)
+        void CreateRenderFromJSON(std::shared_ptr<GameObject> gameObject, nlohmann::json& jsonData)
         {
             assert(jsonData["sprite_texture_source"].is_string());
             std::string TextureSource = jsonData["sprite_texture_source"];
-            CreateRenderComponent(&gameObject, TextureSource.c_str());
+            CreateRenderComponent(gameObject, TextureSource.c_str());
         };
 
 
         void RenderAll()
         {
-            for (GameObject* Current : AllRenderables) {
-                Render(Current);
+
+            for (auto it = AllRenderables.begin(); it != AllRenderables.end(); ) {
+                std::shared_ptr<GameObject> temp = it->lock();
+                if (temp) {
+                    Render(temp);
+                    ++it;
+                }
+                else {
+                    it = AllRenderables.erase(it); 
+                }
             }
+            
         }
 
-        void Render(GameObject* go)
+        void Render(std::shared_ptr<GameObject> go)
         {
             RenderComponent* render = static_cast<RenderComponent*>(go->GetComponent("RenderComponent"));
             if (render != nullptr) {
@@ -36,7 +45,7 @@ namespace Engine {
 
         }
 
-        void CreateRenderComponent(GameObject* go, const char* pFilename)
+        void CreateRenderComponent(std::shared_ptr<GameObject> go, const char* pFilename)
         {
             RenderComponent* render = new RenderComponent;
             render->Sprite = Engine::RenderSystem::CreateSprite(pFilename);
@@ -45,11 +54,15 @@ namespace Engine {
         }
 
         void ReleaseAll() {
-            for (GameObject* Current : AllRenderables) {
-                RenderComponent* render = static_cast<RenderComponent*>(Current->GetComponent("RenderComponent"));
-                if (render != nullptr) {
-                    GLib::Release(render->Sprite);
+            for (std::weak_ptr<GameObject> Current : AllRenderables) {
+                std::shared_ptr<GameObject> temp = Current.lock();
+                if (temp) {
+                    RenderComponent* render = static_cast<RenderComponent*>(temp->GetComponent("RenderComponent"));
+                    if (render != nullptr) {
+                        GLib::Release(render->Sprite);
+                    }
                 }
+                
             }
         }
 

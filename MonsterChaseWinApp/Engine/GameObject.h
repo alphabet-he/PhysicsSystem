@@ -6,6 +6,7 @@
 #include "PhysicsComponent.h"
 #include "MovableComponent.h"
 #include "RenderComponent.h"
+#include <memory>
 
 class GameObject {
 
@@ -14,20 +15,17 @@ public:
 	std::string Name;
 	Point2D Position;
 	
-
-	GameObject() {
-		Name = "";
-		Position = { 0,0 };
+	static std::shared_ptr<GameObject> CreateGameObject() {
+		return std::make_shared<GameObject>(GameObject());
 	}
 
-	GameObject(Point2D position) {
-		Name = "";
-		Position = position;
+	static std::shared_ptr<GameObject> CreateGameObject(Point2D position) {
+		return std::make_shared<GameObject>(GameObject(position));
 	}
 
-	GameObject(std::string name, Point2D p) {
-		Name = name;
-		Position = p;
+
+	static std::shared_ptr<GameObject> CreateGameObject(std::string name, Point2D p) {
+		return std::make_shared<GameObject>(GameObject(name, p));
 	}
 
 	inline void* GetComponent(const std::string& ComponentName) {
@@ -59,4 +57,19 @@ public:
 
 private:
 	std::map<std::string, void* > Components;
+
+	GameObject() {
+		Name = "";
+		Position = { 0,0 };
+	}
+
+	GameObject(Point2D position) {
+		Name = "";
+		Position = position;
+	}
+
+	GameObject(std::string name, Point2D p) {
+		Name = name;
+		Position = p;
+	}
 };

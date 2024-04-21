@@ -5,10 +5,10 @@ namespace Engine {
 
 	namespace GameObjectFactory {
 
-		std::map<std::string, std::function<void(GameObject&, nlohmann::json&)> > ControllerCreators;
-		std::map<std::string, std::function<void(GameObject&, nlohmann::json&)> > ComponentCreators;
+		std::map<std::string, std::function<void(std::shared_ptr<GameObject>, nlohmann::json&)> > ControllerCreators;
+		std::map<std::string, std::function<void(std::shared_ptr<GameObject>, nlohmann::json&)> > ComponentCreators;
 
-		GameObject* CreateGameObject(const char* i_pJSONFileAddr)
+		std::shared_ptr<GameObject> CreateGameObject(const char* i_pJSONFileAddr)
 		{
 			using json = nlohmann::json;
 
@@ -26,7 +26,7 @@ namespace Engine {
 				json jsonData = json::parse(JsonDataRaw);
 
 				// create default game object
-				GameObject* gameObject = new GameObject();
+				std::shared_ptr<GameObject> gameObject = GameObject::CreateGameObject();
 
 				// if there is a name
 				if (jsonData.contains("name")) {
@@ -54,7 +54,7 @@ namespace Engine {
 					auto ControllerCreatorFunc = ControllerCreators.find(jsonData["controller"]["type"]);
 					if (ControllerCreatorFunc != ControllerCreators.end()) {
 						// call creator function
-						ControllerCreatorFunc->second(*gameObject, jsonData["controller"]["initializer"]);
+						ControllerCreatorFunc->second(gameObject, jsonData["controller"]["initializer"]);
 					}
 				}
 
@@ -71,7 +71,7 @@ namespace Engine {
 						auto ComponentCreatorFunc = ComponentCreators.find(it.key());
 						if (ComponentCreatorFunc != ComponentCreators.end()) {
 							// call the creator function
-							ComponentCreatorFunc->second(*gameObject, it.value());
+							ComponentCreatorFunc->second(gameObject, it.value());
 						}
 					}
 				}
@@ -80,12 +80,12 @@ namespace Engine {
 			}
 		}
 
-		void RegisterControllerCreatorFunc(const std::string& i_ControllerType, std::function<void(GameObject&, nlohmann::json&)> i_ControllerCreatorFunc)
+		void RegisterControllerCreatorFunc(const std::string& i_ControllerType, std::function<void(std::shared_ptr<GameObject>, nlohmann::json&)> i_ControllerCreatorFunc)
 		{
 			ControllerCreators.insert({ i_ControllerType, i_ControllerCreatorFunc });
 		}
 
-		void RegisterComponentCreatorFunc(const std::string& i_ComponentType, std::function<void(GameObject&, nlohmann::json&)> i_ComponentCreatorFunc)
+		void RegisterComponentCreatorFunc(const std::string& i_ComponentType, std::function<void(std::shared_ptr<GameObject>, nlohmann::json&)> i_ComponentCreatorFunc)
 		{
 			ComponentCreators.insert({ i_ComponentType, i_ComponentCreatorFunc });
 		}

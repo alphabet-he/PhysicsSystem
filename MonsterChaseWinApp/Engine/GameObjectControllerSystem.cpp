@@ -20,10 +20,10 @@ namespace Engine
 			PlayerControllerList.insert({ pc->PlayerName, pc });
 		}
 
-		void CreatePlayerController(GameObject& gameObject, nlohmann::json& jsonData)
+		void CreatePlayerController(std::shared_ptr<GameObject> gameObject, nlohmann::json& jsonData)
 		{
 			assert(jsonData["name"].is_string());
-			PlayerController* pc = new PlayerController(&gameObject, jsonData["name"]);
+			PlayerController* pc = new PlayerController(gameObject, jsonData["name"]);
 			PlayerControllerList.insert({ jsonData["name"], pc });
 		}
 

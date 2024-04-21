@@ -6,7 +6,7 @@ void Engine::MovableSystem::Init()
 };
 
 
-void Engine::MovableSystem::CreateMoveableFromJSON(GameObject& go, nlohmann::json& jsonData)
+void Engine::MovableSystem::CreateMoveableFromJSON(std::shared_ptr<GameObject> go, nlohmann::json& jsonData)
 {
 	assert(jsonData["velocity"].is_array());
 	assert(jsonData["acceleration"].is_array());
@@ -16,10 +16,10 @@ void Engine::MovableSystem::CreateMoveableFromJSON(GameObject& go, nlohmann::jso
 		Point2D{ jsonData["acceleration"][0], jsonData["acceleration"][1] });
 }
 
-void Engine::MovableSystem::CreateMovableComponent(GameObject& go, Point2D velocity, Point2D acceleration)
+void Engine::MovableSystem::CreateMovableComponent(std::shared_ptr<GameObject> go, Point2D velocity, Point2D acceleration)
 {
 	MovableComponent* movable = new MovableComponent;
 	movable->Velocity = velocity;
 	movable->Acceleration = acceleration;
-	go.AddComponent("MovableComponent", movable);
+	go->AddComponent("MovableComponent", movable);
 };

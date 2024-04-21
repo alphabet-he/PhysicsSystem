@@ -1,6 +1,6 @@
 #include "PhysicsSystem.h"
 
-void Engine::PhysicsSystem::Update(GameObject* go)
+void Engine::PhysicsSystem::Update(std::shared_ptr<GameObject> go)
 {
 	PhysicsComponent* physics = static_cast<PhysicsComponent*>(go->GetComponent("PhysicsComponent"));
 	MovableComponent* movable = static_cast<MovableComponent*>(go->GetComponent("MovableComponent"));
@@ -34,31 +34,31 @@ void Engine::PhysicsSystem::Init()
 }
 
 
-void Engine::PhysicsSystem::CreatePhysicsFromJSON(GameObject& gameObject, nlohmann::json& jsonData)
+void Engine::PhysicsSystem::CreatePhysicsFromJSON(std::shared_ptr<GameObject> gameObject, nlohmann::json& jsonData)
 {
 	assert(jsonData["kDrag"].is_array());
 	assert(jsonData["mass"].is_number_float());
 	Engine::PhysicsSystem::CreatePhysicsComponent(gameObject, Point2D{ jsonData["kDrag"][0], jsonData["kDrag"][1] }, jsonData["mass"]);
 }
 
-void Engine::PhysicsSystem::CreatePhysicsComponent(GameObject& go, Point2D kDrag, float mass) {
+void Engine::PhysicsSystem::CreatePhysicsComponent(std::shared_ptr<GameObject> go, Point2D kDrag, float mass) {
 	PhysicsComponent* physics = new PhysicsComponent;
 	physics->kDrag = kDrag;
 	physics->Mass = mass;
-	go.AddComponent("PhysicsComponent", physics);
+	go->AddComponent("PhysicsComponent", physics);
 }
 
 
-void Engine::PhysicsSystem::AddForce(GameObject* go, Point2D force) {
+void Engine::PhysicsSystem::AddForce(std::shared_ptr<GameObject> go, Point2D force) {
 	PhysicsComponent* physics = static_cast<PhysicsComponent*>(go->GetComponent("PhysicsComponent"));
 	physics->kDrag += force;
 }
 
-void Engine::PhysicsSystem::ReleaseXForce(GameObject* go) {
+void Engine::PhysicsSystem::ReleaseXForce(std::shared_ptr<GameObject> go) {
 	PhysicsComponent* physics = static_cast<PhysicsComponent*>(go->GetComponent("PhysicsComponent"));
 	physics->kDrag.x = 0;
 }
-void Engine::PhysicsSystem::ReleaseYForce(GameObject* go) {
+void Engine::PhysicsSystem::ReleaseYForce(std::shared_ptr<GameObject> go) {
 	PhysicsComponent* physics = static_cast<PhysicsComponent*>(go->GetComponent("PhysicsComponent"));
 	physics->kDrag.y = 0;
 }

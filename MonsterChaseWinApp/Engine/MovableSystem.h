@@ -3,6 +3,7 @@
 #include "MovableComponent.h"
 #include "nlohmann/json.hpp"
 #include "GameObjectFactory.h"
+#include <memory>
 
 
 namespace Engine {
@@ -12,9 +13,9 @@ namespace Engine {
 		void Init();
 
 
-		void CreateMoveableFromJSON(GameObject& go, nlohmann::json& jsonData);
+		void CreateMoveableFromJSON(std::shared_ptr<GameObject> go, nlohmann::json& jsonData);
 
-		void CreateMovableComponent(GameObject& go, Point2D velocity, Point2D acceleration);
+		void CreateMovableComponent(std::shared_ptr<GameObject> go, Point2D velocity, Point2D acceleration);
 	}
 }
 

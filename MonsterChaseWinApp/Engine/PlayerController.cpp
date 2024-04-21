@@ -13,7 +13,7 @@ PlayerController::PlayerController()
         });
 }
 
-PlayerController::PlayerController(GameObject* go, std::string name)
+PlayerController::PlayerController(std::shared_ptr<GameObject> go, std::string name)
 {
 	PlayerObject = go;
 	PlayerName = name;

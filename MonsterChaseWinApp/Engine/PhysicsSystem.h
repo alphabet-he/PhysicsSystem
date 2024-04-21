@@ -5,6 +5,7 @@
 #include "TimeSystem.h"
 #include "nlohmann/json.hpp"
 #include "GameObjectFactory.h"
+#include <memory>
 
 namespace Engine {
 
@@ -12,17 +13,17 @@ namespace Engine {
 
 		void Init();
 		
-		void Update(GameObject* go);
+		void Update(std::shared_ptr<GameObject> go);
 
-		void CreatePhysicsFromJSON(GameObject& gameObject, nlohmann::json& jsonData);
+		void CreatePhysicsFromJSON(std::shared_ptr<GameObject> gameObject, nlohmann::json& jsonData);
 
-		void CreatePhysicsComponent(GameObject& go, Point2D kDrag, float mass);
+		void CreatePhysicsComponent(std::shared_ptr<GameObject> go, Point2D kDrag, float mass);
 
 		
-		void AddForce(GameObject* go, Point2D force);
+		void AddForce(std::shared_ptr<GameObject> go, Point2D force);
 
-		void ReleaseXForce(GameObject* go);
-		void ReleaseYForce(GameObject* go);
+		void ReleaseXForce(std::shared_ptr<GameObject> go);
+		void ReleaseYForce(std::shared_ptr<GameObject> go);
 		
 	}
 
