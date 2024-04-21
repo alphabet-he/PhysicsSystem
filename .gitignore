@@ -398,3 +398,4 @@ FodyWeavers.xsd
 *.sln.iml
 MonsterChaseWinApp/Exports/GLib/GLib_x64-Debug.lib
 MonsterChaseWinApp/Exports/GLib/GLib_x64-Debug.lib
+*.lib

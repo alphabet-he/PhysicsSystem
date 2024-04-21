@@ -30,6 +30,7 @@ namespace Engine
 		void ReleaseAll()
 		{
 			for (auto it = PlayerControllerList.begin(); it != PlayerControllerList.end(); it++) {
+				it->second->Release();
 				delete it->second;
 			}
 		}
