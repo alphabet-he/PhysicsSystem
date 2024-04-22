@@ -10,6 +10,9 @@ bool AreFloatsEqual(float a, float b, float epsilon = 0.0001f) {
 }
 
 bool UnitTest() {
+
+    float pi = 3.1415926535897f;
+
     // test vector4
 
     // equal
@@ -53,6 +56,111 @@ bool UnitTest() {
     d.Normalize();
     assert(d == normalized);
 
-    printf("Unit Test Passed!");
+
+    // matrix 4*4
+
+    // equal
+    Matrix4 q = Matrix4(
+        7, 3, 5, 6,
+        2, 5, 8, -3,
+        -5, 4, 1, 2,
+        8, 12, -9, 23
+    );
+    Matrix4 w = Matrix4(
+        1, 0, 7, 2,
+        9, 4, 3, -5,
+        -6, 1, 2, 3,
+        5, -8, -7, 4
+    );
+    assert(q != w);
+
+    // multiply
+    Matrix4 e = Matrix4(
+        34, -31, 26, 38,
+        -16, 52, 66, -9,
+        35,	1, -35, -19,
+        285, -145, -87,	21
+    );
+    assert(q * w == e);
+
+    // M * V
+    Vector4 v = Vector4(1, 3, 7, 4);
+    c = Vector4(75, 61, 22, 73);
+    assert(q * v == c);
+
+    // V * M
+    c = Vector4(10, 94, 0, 103);
+    v *= q;
+    assert(v == c);
+
+    // row
+    c = Vector4(2, 5, 8, -3);
+    assert(q.Row(1) == c);
+
+    // column
+    c = Vector4(5, 8, 1, -9);
+    assert(q.Col(2) == c);
+
+    // translation matrix
+    Vector3 p = Vector3(1, 3, 7);
+    Vector3 transV = Vector3(2, 4, 2);
+    Matrix4 transM = Matrix4::CreateTranslationCV(transV);
+    Vector3 target = Vector3(3, 7, 9);
+    assert(transM.TransformPoint(p) == target);
+
+    // scale matrix
+    transM = Matrix4::CreateScale(1, 2, 2);
+    target = Vector3(1, 6, 14);
+    assert(transM.TransformPoint(p) == target);
+
+    // rotation matrix
+    // x
+    transM = Matrix4::CreateXRotationCV(pi / 2.0f);
+    target = Vector3(1, -7, 3);
+    assert(AreFloatsEqual(transM.TransformPoint(p).x, target.x));
+    assert(AreFloatsEqual(transM.TransformPoint(p).y, target.y));
+    assert(AreFloatsEqual(transM.TransformPoint(p).z, target.z));
+    // y
+    transM = Matrix4::CreateYRotationCV(pi / 2.0f);
+    target = Vector3(7, 3, -1);
+    assert(AreFloatsEqual(transM.TransformPoint(p).x, target.x));
+    assert(AreFloatsEqual(transM.TransformPoint(p).y, target.y));
+    assert(AreFloatsEqual(transM.TransformPoint(p).z, target.z));
+
+    // z
+    transM = Matrix4::CreateZRotationCV(pi / 2.0f);
+    target = Vector3(-3, 1, 7);
+    assert(AreFloatsEqual(transM.TransformPoint(p).x, target.x));
+    assert(AreFloatsEqual(transM.TransformPoint(p).y, target.y));
+    assert(AreFloatsEqual(transM.TransformPoint(p).z, target.z));
+
+    // invert
+    transM.Invert();
+    assert(AreFloatsEqual(transM.TransformPoint(target).x, p.x));
+    assert(AreFloatsEqual(transM.TransformPoint(target).y, p.y));
+    assert(AreFloatsEqual(transM.TransformPoint(target).z, p.z));
+
+    // invert with rotation and translation
+    Matrix4 transRot = Matrix4::CreateZRotationCV(pi / 2.0f);
+    Matrix4 transLation = Matrix4::CreateTranslationCV(2, 5, 7);
+    transM =  transLation * transRot;
+    target = Vector3(-1, 6, 14);
+    assert(AreFloatsEqual(transM.TransformPoint(p).x, target.x));
+    assert(AreFloatsEqual(transM.TransformPoint(p).y, target.y));
+    assert(AreFloatsEqual(transM.TransformPoint(p).z, target.z));
+
+    Matrix4 inverted = transM.GetInverseRotTransCV();
+    assert(AreFloatsEqual(inverted.TransformPoint(target).x, p.x));
+    assert(AreFloatsEqual(inverted.TransformPoint(target).y, p.y));
+    assert(AreFloatsEqual(inverted.TransformPoint(target).z, p.z));
+
     return true;
 }
+
+const Vector3 Vector3::Zero(0.0f, 0.0f, 0.0f);
+const Vector4 Vector4::Zero(0.0f, 0.0f, 0.0f, 0.0f);
+const Matrix4 Matrix4::Identity(
+    1.0f, 0.0f, 0.0f, 0.0f,
+    0.0f, 1.0f, 0.0f, 0.0f,
+    0.0f, 0.0f, 1.0f, 0.0f,
+    0.0f, 0.0f, 0.0f, 1.0f);

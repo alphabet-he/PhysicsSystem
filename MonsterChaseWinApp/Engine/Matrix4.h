@@ -48,6 +48,22 @@ struct Matrix4
 		return *this;
 	}
 
+	// equal
+	bool operator==(const Matrix4& i_other) {
+		for (int i = 0; i < 4; ++i) {
+			for (int j = 0; j < 4; ++j) {
+				if (m[i][j] != i_other.m[i][j]) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	bool operator!=(const Matrix4& i_other) {
+		return(!(*this == i_other));
+	}
+
 	// matrix multiplication
 	Matrix4 operator*(const Matrix4& i_other) const {
 		Matrix4 result;
@@ -302,11 +318,13 @@ struct Matrix4
 		return *this * i_Vector;
 	};
 
+	// transform
+	Vector3 TransformPoint(Vector3 i_v) {
+		Vector4 v = Vector4(i_v, 1);
+		v = *this * v;
+		return Vector3(v.x, v.y, v.z);
+	}
+
 	static const Matrix4 Identity;
 };
 
-const Matrix4 Matrix4::Identity(
-	1.0f, 0.0f, 0.0f, 0.0f,
-	0.0f, 1.0f, 0.0f, 0.0f, 
-	0.0f, 0.0f, 1.0f, 0.0f, 
-	0.0f, 0.0f, 0.0f, 1.0f);

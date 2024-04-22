@@ -118,4 +118,3 @@ struct Vector4
 	static const Vector4 Zero;
 };
 
-const Vector4 Vector4::Zero(0.0f, 0.0f, 0.0f, 0.0f);
