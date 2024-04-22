@@ -25,6 +25,7 @@
     <ClInclude Include="GameObjectControllerSystem.h" />
     <ClInclude Include="GameObjectFactory.h" />
     <ClInclude Include="LoadFileToBuffer.h" />
+    <ClInclude Include="Matrix4.h" />
     <ClInclude Include="MovableComponent.h" />
     <ClInclude Include="MovableSystem.h" />
     <ClInclude Include="PhysicsComponent.h" />
@@ -34,17 +35,21 @@
     <ClInclude Include="RenderComponent.h" />
     <ClInclude Include="RenderSystem.h" />
     <ClInclude Include="TimeSystem.h" />
+    <ClInclude Include="Vector3.h" />
+    <ClInclude Include="Vector4.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameObjectControllerSystem.cpp" />
     <ClCompile Include="GameObjectFactory.cpp" />
     <ClCompile Include="GameState.cpp" />
     <ClCompile Include="LoadFileToBuffer.cpp" />
+    <ClCompile Include="Matrix4.cpp" />
     <ClCompile Include="MovableSystem.cpp" />
     <ClCompile Include="PhysicsSystem.cpp" />
     <ClCompile Include="PlayerController.cpp" />
     <ClCompile Include="RenderSystem.cpp" />
     <ClCompile Include="TimeSystem.cpp" />
+    <ClCompile Include="Vector4.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

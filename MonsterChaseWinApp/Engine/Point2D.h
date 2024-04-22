@@ -7,7 +7,6 @@ struct Point2D
 	float x;
 	float y;
 
-
 	Point2D operator+(Point2D p2) {
 		return Point2D{ x + p2.x, y + p2.y };
 	}
