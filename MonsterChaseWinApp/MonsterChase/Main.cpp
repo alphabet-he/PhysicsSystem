@@ -18,6 +18,8 @@
 #include "Point2D.h"
 #include <GameState.h>
 
+#include "Matrix4Test.h"
+
 static int windowWidth = 800;
 static int windowHeight = 600;
 
@@ -92,6 +94,7 @@ void MovetoTarget(Point2D& start, Point2D target, float moveDist);
 
 int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_lpCmdLine, int i_nCmdShow)
 {
+    UnitTest();
 
     // random seed
     srand((unsigned int)time(0));
