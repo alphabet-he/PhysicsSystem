@@ -3,7 +3,7 @@
 #include "PhysicsComponent.h"
 #include "MovableComponent.h"
 #include "TimeSystem.h"
-#include "nlohmann/json.hpp"
+#include "json.hpp"
 #include "GameObjectFactory.h"
 #include <memory>
 

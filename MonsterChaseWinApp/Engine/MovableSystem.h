@@ -1,7 +1,7 @@
 #pragma once
 #include "GameObject.h"
 #include "MovableComponent.h"
-#include "nlohmann/json.hpp"
+#include "json.hpp"
 #include "GameObjectFactory.h"
 #include <memory>
 

@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameState.h" />
+    <ClInclude Include="json.hpp" />
     <ClInclude Include="LoadFile.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameObjectControllerSystem.h" />

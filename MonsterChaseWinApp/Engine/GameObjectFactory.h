@@ -2,7 +2,7 @@
 
 #include "GameObject.h"
 
-#include "nlohmann/json.hpp"
+#include "json.hpp"
 
 #include <memory>
 

@@ -3,7 +3,7 @@
 #include "RenderComponent.h"
 #include <GLib.h>
 #include <vector>
-#include "nlohmann/json.hpp"
+#include "json.hpp"
 #include "GameObjectFactory.h"
 #include <memory>
 
