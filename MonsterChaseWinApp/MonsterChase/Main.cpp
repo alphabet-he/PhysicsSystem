@@ -180,7 +180,8 @@ int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_l
 
         // release memory
         GameState::ReleaseMemory();
-        Player = nullptr;
+        int a = Player.use_count(); // a = 1
+        Player = nullptr; // there shouldn't be any pointer to the game object
         Monster = nullptr;
 
         // IMPORTANT:  Tell GLib to shutdown, releasing resources.

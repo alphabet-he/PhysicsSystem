@@ -90,6 +90,11 @@ namespace Engine {
 			ComponentCreators.insert({ i_ComponentType, i_ComponentCreatorFunc });
 		}
 
+		void ReleaseRegisterFuncMaps() {
+			std::map<std::string, std::function<void(std::shared_ptr<GameObject>, nlohmann::json&)>>().swap(ControllerCreators);
+			std::map<std::string, std::function<void(std::shared_ptr<GameObject>, nlohmann::json&)>>().swap(ComponentCreators);
+
+		}
 	}
 
 }

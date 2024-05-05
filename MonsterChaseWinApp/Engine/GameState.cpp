@@ -31,6 +31,8 @@ namespace Engine
 		{
 			RenderSystem::ReleaseAll();
 			GameObjectController::ReleaseAll();
+
+			Engine::GameObjectFactory::ReleaseRegisterFuncMaps();
 		}
 	}
 

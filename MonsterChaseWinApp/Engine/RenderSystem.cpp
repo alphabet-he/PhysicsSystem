@@ -64,6 +64,8 @@ namespace Engine {
                 }
                 
             }
+
+            std::vector<std::weak_ptr<GameObject>>().swap(AllRenderables);
         }
 
         GLib::Sprite* CreateSprite(const char* i_pFilename)

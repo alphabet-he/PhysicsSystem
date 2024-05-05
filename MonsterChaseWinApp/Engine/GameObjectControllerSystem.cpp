@@ -33,6 +33,9 @@ namespace Engine
 				it->second->Release();
 				delete it->second;
 			}
+
+			std::map<std::string, PlayerController*>().swap(PlayerControllerList);
+			
 		}
 
 	}

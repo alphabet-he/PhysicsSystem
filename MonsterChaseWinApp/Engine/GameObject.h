@@ -52,7 +52,7 @@ public:
 				delete comp;
 			}*/
 		}
-		Components.clear();
+		std::map<std::string, void* >().swap(Components);
 	}
 
 private:
