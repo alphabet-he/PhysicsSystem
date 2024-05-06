@@ -1,32 +1,51 @@
 #include "PhysicsSystem.h"
 
-void Engine::PhysicsSystem::Update(std::shared_ptr<GameObject> go)
-{
-	PhysicsComponent* physics = static_cast<PhysicsComponent*>(go->GetComponent("PhysicsComponent"));
-	MovableComponent* movable = static_cast<MovableComponent*>(go->GetComponent("MovableComponent"));
+namespace Engine {
+	namespace PhysicsSystem {
+		std::vector<std::weak_ptr<GameObject>> AllPhysics;
 
-	if (physics != nullptr && movable != nullptr) {
-		// apply semi-implicit euler
-
-		// find delta-t
-		_LARGE_INTEGER currTime, ElapsedTime;
-		float ElapsedSeconds;
-		QueryPerformanceCounter(&currTime);
-		ElapsedTime.QuadPart = currTime.QuadPart - Engine::TimeSystem::GetLastRecordedTime().QuadPart;
-		ElapsedSeconds = static_cast<float>(ElapsedTime.QuadPart) / Engine::TimeSystem::GetFrequency().QuadPart;
+		void Update(std::shared_ptr<GameObject> go, _LARGE_INTEGER currTime)
+		{
+			_LARGE_INTEGER ElapsedTime;
+			ElapsedTime.QuadPart = currTime.QuadPart - Engine::TimeSystem::GetLastRecordedTime().QuadPart;
+			float ElapsedSeconds = static_cast<float>(ElapsedTime.QuadPart) / Engine::TimeSystem::GetFrequency().QuadPart;
 
 
-		// update velocity
-		movable->Velocity += movable->Acceleration * ElapsedSeconds;
+			PhysicsComponent* physics = static_cast<PhysicsComponent*>(go->GetComponent("PhysicsComponent"));
+			MovableComponent* movable = static_cast<MovableComponent*>(go->GetComponent("MovableComponent"));
 
-		// update position
-		go->Position += movable->Velocity * ElapsedSeconds;
+			if (physics != nullptr && movable != nullptr) {
+				// apply semi-implicit euler
 
-		// update acceleration
-		movable->Acceleration = physics->kDrag / physics->Mass;
+				// update velocity
+				movable->Velocity += movable->Acceleration * ElapsedSeconds;
 
+				// update acceleration
+				movable->Acceleration = physics->kDrag / physics->Mass;
+
+			}
+		}
+
+		void UpdateAll(_LARGE_INTEGER currTime) {
+			for (auto it = AllPhysics.begin(); it != AllPhysics.end(); ) {
+				std::shared_ptr<GameObject> temp = it->lock();
+				if (temp) {
+					Update(temp, currTime);
+					++it;
+				}
+				else {
+					it = AllPhysics.erase(it);
+				}
+			}
+		}
+
+		void ReleasePhysicsList() {
+			std::vector<std::weak_ptr<GameObject>>().swap(AllPhysics);
+		}
 	}
 }
+
+
 
 void Engine::PhysicsSystem::Init()
 {
@@ -46,6 +65,7 @@ void Engine::PhysicsSystem::CreatePhysicsComponent(std::shared_ptr<GameObject> g
 	physics->kDrag = kDrag;
 	physics->Mass = mass;
 	go->AddComponent("PhysicsComponent", physics);
+	AllPhysics.push_back(go);
 }
 
 
@@ -60,6 +80,12 @@ void Engine::PhysicsSystem::ReleaseXForce(std::shared_ptr<GameObject> go) {
 }
 void Engine::PhysicsSystem::ReleaseYForce(std::shared_ptr<GameObject> go) {
 	PhysicsComponent* physics = static_cast<PhysicsComponent*>(go->GetComponent("PhysicsComponent"));
+	physics->kDrag.y = 0;
+}
+
+void Engine::PhysicsSystem::ReleaseForce(std::shared_ptr<GameObject> go) {
+	PhysicsComponent* physics = static_cast<PhysicsComponent*>(go->GetComponent("PhysicsComponent"));
+	physics->kDrag.x = 0;
 	physics->kDrag.y = 0;
 }
 

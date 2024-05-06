@@ -13,6 +13,7 @@ namespace Engine
 			RenderSystem::Init();
 			PhysicsSystem::Init();
 			MovableSystem::Init();
+			CollisionSystem::Init();
 		}
 
 
@@ -30,9 +31,35 @@ namespace Engine
 		void ReleaseMemory()
 		{
 			RenderSystem::ReleaseAll();
+			CollisionSystem::ReleaseCollidableList();
+			PhysicsSystem::ReleasePhysicsList();
+			MovableSystem::ReleaseMovableList();
+
 			GameObjectController::ReleaseAll();
 
 			Engine::GameObjectFactory::ReleaseRegisterFuncMaps();
+		}
+
+		void Update() {
+			_LARGE_INTEGER currTime;
+			QueryPerformanceCounter(&currTime);
+
+			// Update velocity and acceleration
+			PhysicsSystem::UpdateAll(currTime);
+
+			// Update position
+			MovableSystem::UpdateAll(currTime);
+
+			// Render sprites
+			RenderSystem::RenderAll();
+
+			// Tell GLib we're done rendering sprites
+			GLib::Sprites::EndRendering();
+			// IMPORTANT: Tell GLib we're done rendering
+			GLib::EndRendering();
+
+			// update time system
+			TimeSystem::Update();
 		}
 	}
 

@@ -1,4 +1,51 @@
 #include "MovableSystem.h"
+#include "TimeSystem.h"
+
+namespace Engine {
+	namespace MovableSystem {
+		std::vector<std::weak_ptr<GameObject>> AllMovables;
+
+		void Update(std::shared_ptr<GameObject> go, _LARGE_INTEGER currTime) {
+			// update position
+			// find delta-t
+			_LARGE_INTEGER ElapsedTime;
+			ElapsedTime.QuadPart = currTime.QuadPart - Engine::TimeSystem::GetLastRecordedTime().QuadPart;
+			float ElapsedSeconds = static_cast<float>(ElapsedTime.QuadPart) / Engine::TimeSystem::GetFrequency().QuadPart;
+
+			MovableComponent* movable = static_cast<MovableComponent*>(go->GetComponent("MovableComponent"));
+			if (movable) {
+				go->Position += movable->Velocity * ElapsedSeconds;
+			}
+			
+		}
+
+		void UpdateAll(_LARGE_INTEGER currTime) {
+			for (auto it = AllMovables.begin(); it != AllMovables.end(); ) {
+				std::shared_ptr<GameObject> temp = it->lock();
+				if (temp) {
+					Update(temp, currTime);
+					++it;
+				}
+				else {
+					it = AllMovables.erase(it);
+				}
+			}
+		}
+
+		void ReleaseMovableList() {
+			std::vector<std::weak_ptr<GameObject>>().swap(AllMovables);
+		}
+
+		void SetVelocity(std::shared_ptr<GameObject> go, Point2D velocity)
+		{
+			MovableComponent* movable = static_cast<MovableComponent*>(go->GetComponent("MovableComponent"));
+			if (movable) {
+				movable->Velocity = velocity;
+			}
+		}
+	}
+}
+
 
 void Engine::MovableSystem::Init()
 {
@@ -22,4 +69,5 @@ void Engine::MovableSystem::CreateMovableComponent(std::shared_ptr<GameObject> g
 	movable->Velocity = velocity;
 	movable->Acceleration = acceleration;
 	go->AddComponent("MovableComponent", movable);
+	AllMovables.push_back(go);
 };

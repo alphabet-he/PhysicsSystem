@@ -13,7 +13,11 @@ namespace Engine {
 
 		void Init();
 		
-		void Update(std::shared_ptr<GameObject> go);
+		void UpdateAll(_LARGE_INTEGER currTime);
+
+		void Update(std::shared_ptr<GameObject> go, _LARGE_INTEGER currTime);
+
+		void ReleasePhysicsList();
 
 		void CreatePhysicsFromJSON(std::shared_ptr<GameObject> gameObject, nlohmann::json& jsonData);
 
@@ -24,6 +28,8 @@ namespace Engine {
 
 		void ReleaseXForce(std::shared_ptr<GameObject> go);
 		void ReleaseYForce(std::shared_ptr<GameObject> go);
+
+		void ReleaseForce(std::shared_ptr<GameObject> go);
 		
 	}
 

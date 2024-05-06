@@ -43,6 +43,13 @@ namespace Engine {
 
 				}
 
+				// if there is a rotation
+				if (jsonData.contains("rotation")) {
+
+					assert(jsonData["rotation"].is_array());
+					gameObject->Rotation = Vector3{ jsonData["rotation"][0] , jsonData["rotation"][1] , jsonData["rotation"][2] };
+
+				}
 				// if there is controller
 				if (jsonData.contains("controller")) {
 

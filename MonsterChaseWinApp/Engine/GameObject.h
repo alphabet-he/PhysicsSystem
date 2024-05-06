@@ -3,6 +3,7 @@
 #include <string>
 #include <map>
 #include "Point2D.h"
+#include "Vector3.h"
 #include "PhysicsComponent.h"
 #include "MovableComponent.h"
 #include "RenderComponent.h"
@@ -14,6 +15,7 @@ class GameObject {
 public:
 	std::string Name;
 	Point2D Position;
+	Vector3 Rotation;
 	
 	static std::shared_ptr<GameObject> CreateGameObject() {
 		return std::make_shared<GameObject>(GameObject());

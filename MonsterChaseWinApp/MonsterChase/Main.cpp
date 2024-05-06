@@ -147,29 +147,26 @@ int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_l
 
                     // Tell GLib to render this sprite at our calculated location
                     //GLib::Render(*pGoodGuy, GoodOffset, 0.0f, 0.0f);
-
-                    PhysicsSystem::Update(Player);
                 }
                 if (Monster && Monster->GetComponent("RenderComponent") != nullptr)
                 {
                     static float			moveDist = .005f;
 
-                    MovetoTarget(Monster->Position, Player->Position, moveDist);
+                    Point2D velocity = Player->Position - Monster->Position;
+                    Vector3 temp(velocity, 0.0f);
+                    temp.Normalize();
+                    velocity = Point2D{ temp.x, temp.y };
+                    velocity *= 300.0f;
+                    MovableSystem::SetVelocity(Monster, velocity);
+
+                    //MovetoTarget(Monster->Position, Player->Position, moveDist);
 
                     // Tell GLib to render this sprite at our calculated location
                     //GLib::Render(*pBadGuy, BadOffset, 0.0f, 0.0f);
                 }
 
-                // Render sprites
-                RenderSystem::RenderAll();
-
-                // Tell GLib we're done rendering sprites
-                GLib::Sprites::EndRendering();
-                // IMPORTANT: Tell GLib we're done rendering
-                GLib::EndRendering();
-
-                // update time system
-                TimeSystem::Update();
+                // update game state
+                GameState::Update();
 
                 // update g_bQuit
                 g_bQuit = GameState::getQuit();

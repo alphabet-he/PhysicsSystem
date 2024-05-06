@@ -16,6 +16,15 @@ namespace Engine {
 		void CreateMoveableFromJSON(std::shared_ptr<GameObject> go, nlohmann::json& jsonData);
 
 		void CreateMovableComponent(std::shared_ptr<GameObject> go, Point2D velocity, Point2D acceleration);
+
+		void UpdateAll(_LARGE_INTEGER currTime);
+
+		void Update(std::shared_ptr<GameObject> go, _LARGE_INTEGER currTime);
+
+		void ReleaseMovableList();
+
+		void SetVelocity(std::shared_ptr<GameObject> go, Point2D velocity);
+	
 	}
 }
 
