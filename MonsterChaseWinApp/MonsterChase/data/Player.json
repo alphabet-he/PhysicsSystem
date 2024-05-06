@@ -2,6 +2,7 @@
   "name": "Player",
 
   "position": [ -180.0, -100.0 ],
+  "rotation": [ 0.0, 0.0, 0.0 ],
 
   "controller": {
     "type": "player",
@@ -21,6 +22,10 @@
     "physics": {
       "kDrag": [ 0.0, 0.0 ],
       "mass": 1.0
+    },
+    "collision":{
+      "center":[ 0.0, 86.0 ],
+      "extents": [40.0, 86.0]
     }
   }
 }
