@@ -40,7 +40,7 @@ namespace Engine {
         {
             RenderComponent* render = static_cast<RenderComponent*>(go->GetComponent("RenderComponent"));
             if (render != nullptr) {
-                GLib::Render(*(render->Sprite), go->Position.ToGlibPoint2D(), 0.0f, 0.0f);
+                GLib::Render(*(render->Sprite), go->Position.ToGlibPoint2D(), 0.0f, go->Rotation.z);
                 render->Sprite;
             }
 

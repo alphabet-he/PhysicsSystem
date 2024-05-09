@@ -1,7 +1,9 @@
 #include <assert.h>
 #include <stdio.h>
 #include <stdint.h>
+#include <iostream>
 #include <Windows.h>
+
 #include <ctime>
 #include <memory>
 
@@ -19,6 +21,8 @@
 #include <GameState.h>
 
 #include "Matrix4Test.h"
+
+
 
 static int windowWidth = 800;
 static int windowHeight = 600;
@@ -91,10 +95,63 @@ using namespace Engine;
 
 void MovetoTarget(Point2D& start, Point2D target, float moveDist);
 
-
-int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_lpCmdLine, int i_nCmdShow)
+BOOL AttachOrAllocateConsole()
 {
-    UnitTest();
+    // Try to attach to the existing console
+    if (!AttachConsole(ATTACH_PARENT_PROCESS)) {
+        // If there is no console to attach to, create a new one
+        if (!AllocConsole()) {
+            return FALSE;  // Return FALSE if both attempts fail
+        }
+    }
+    return TRUE;
+}
+
+void RedirectIOToConsole()
+{
+    FILE* pFile;
+
+    // Redirect STDOUT to the console
+    freopen_s(&pFile, "CONOUT$", "w", stdout);
+
+    // Redirect STDIN to the console
+    freopen_s(&pFile, "CONIN$", "r", stdin);
+
+    // Redirect STDERR to the console
+    freopen_s(&pFile, "CONOUT$", "w", stderr);
+
+    // Clear the error state for each of the C++ standard streams
+    std::cout.clear();
+    std::cin.clear();
+    std::cerr.clear();
+    std::clog.clear();
+}
+
+
+int WINAPI wWinMain(
+    HINSTANCE i_hInstance, 
+    HINSTANCE i_hPrevInstance, 
+    LPWSTR i_lpCmdLine, 
+    int i_nCmdShow)
+{
+    
+
+    // Attach or allocate a console
+    if (!AttachOrAllocateConsole()) {
+        MessageBox(NULL, L"Failed to attach or allocate a console!", L"Error", MB_ICONERROR);
+        return 1;
+    }
+
+    // Redirect standard I/O to the console
+    RedirectIOToConsole();
+
+    // Example use of printf and std::cout
+    printf("Hello, Windows GUI Application with Console Output!\n");
+
+    if (UnitTest()) {
+        std::cout << "Matrix4 unit test passed!" << std::endl;
+    }
+    
 
     // random seed
     srand((unsigned int)time(0));
@@ -185,89 +242,14 @@ int WINAPI wWinMain(HINSTANCE i_hInstance, HINSTANCE i_hPrevInstance, LPWSTR i_l
         GLib::Shutdown();
     }
 
+    FreeConsole();
+
 #if defined _DEBUG
     _CrtDumpMemoryLeaks();
 #endif // _DEBUG
 
 }
-/*
-GLib::Sprite* CreateSprite(const char* i_pFilename)
-{
-    assert(i_pFilename);
 
-    size_t sizeTextureFile = 0;
-
-    // Load the source file (texture data)
-    void* pTextureFile = LoadFile(i_pFilename, sizeTextureFile);
-
-    // Ask GLib to create a texture out of the data (assuming it was loaded successfully)
-    GLib::Texture* pTexture = pTextureFile ? GLib::CreateTexture(pTextureFile, sizeTextureFile) : nullptr;
-
-    // exit if something didn't work
-    // probably need some debug logging in here!!!!
-    if (pTextureFile)
-        delete[] pTextureFile;
-
-    if (pTexture == nullptr)
-        return nullptr;
-
-    unsigned int width = 0;
-    unsigned int height = 0;
-    unsigned int depth = 0;
-
-    // Get the dimensions of the texture. We'll use this to determine how big it is on screen
-    bool result = GLib::GetDimensions(*pTexture, width, height, depth);
-    assert(result == true);
-    assert((width > 0) && (height > 0));
-
-    // Define the sprite edges
-    GLib::SpriteEdges	Edges = { -float(width / 2.0f), float(height), float(width / 2.0f), 0.0f };
-    GLib::SpriteUVs	UVs = { { 0.0f, 0.0f }, { 1.0f, 0.0f }, { 0.0f, 1.0f }, { 1.0f, 1.0f } };
-    GLib::RGBA							Color = { 255, 255, 255, 255 };
-
-    // Create the sprite
-    GLib::Sprite* pSprite = GLib::CreateSprite(Edges, 0.1f, Color, UVs, pTexture);
-
-    // release our reference on the Texture
-    GLib::Release(pTexture);
-
-    return pSprite;
-}
-
-void* LoadFile(const char* i_pFilename, size_t& o_sizeFile)
-{
-    assert(i_pFilename != NULL);
-
-    FILE* pFile = NULL;
-
-    errno_t fopenError = fopen_s(&pFile, i_pFilename, "rb");
-    if (fopenError != 0)
-        return NULL;
-
-    assert(pFile != NULL);
-
-    int FileIOError = fseek(pFile, 0, SEEK_END);
-    assert(FileIOError == 0);
-
-    long FileSize = ftell(pFile);
-    assert(FileSize >= 0);
-
-    FileIOError = fseek(pFile, 0, SEEK_SET);
-    assert(FileIOError == 0);
-
-    uint8_t* pBuffer = new uint8_t[FileSize];
-    assert(pBuffer);
-
-    size_t FileRead = fread(pBuffer, 1, FileSize, pFile);
-    assert(FileRead == FileSize);
-
-    fclose(pFile);
-
-    o_sizeFile = FileSize;
-
-    return pBuffer;
-}
-*/
 void MovetoTarget(Point2D& start, Point2D target, float moveDist) {
     int r = rand() % 100;
     bool moveX = false;

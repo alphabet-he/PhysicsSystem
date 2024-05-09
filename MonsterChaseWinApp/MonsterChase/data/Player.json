@@ -2,7 +2,7 @@
   "name": "Player",
 
   "position": [ -180.0, -100.0 ],
-  "rotation": [ 0.0, 0.0, 0.0 ],
+  "rotation": [ 0.0, 0.0, 1 ],
 
   "controller": {
     "type": "player",
@@ -13,7 +13,7 @@
 
   "components": {
     "render": {
-      "sprite_texture_source": "data\\GoodGuy.dds"
+      "sprite_texture_source": "data\\GoodGuy_mark_no_crop.dds"
     },
     "moveable": {
       "velocity": [ 0.0, 0.0 ],
@@ -24,8 +24,8 @@
       "mass": 1.0
     },
     "collision":{
-      "center":[ 0.0, 86.0 ],
-      "extents": [40.0, 86.0]
+      "center":[ 0.0, 82.0 ],
+      "extents": [44.0, 82.0]
     }
   }
 }

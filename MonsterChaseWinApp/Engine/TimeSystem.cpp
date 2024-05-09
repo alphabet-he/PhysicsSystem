@@ -7,6 +7,7 @@ namespace Engine {
 		_LARGE_INTEGER GameStartTime;
 		_LARGE_INTEGER LastRecordedTime;
 		_LARGE_INTEGER Frequency;
+		float frameTime = 0;
 
 		void Init() {
 			QueryPerformanceFrequency(&Frequency);
@@ -15,7 +16,13 @@ namespace Engine {
 		}
 
 		void Update() {
+			_LARGE_INTEGER temp, ElapsedTime;
+			temp = LastRecordedTime;
+			
 			QueryPerformanceCounter(&LastRecordedTime);
+			ElapsedTime.QuadPart = LastRecordedTime.QuadPart - temp.QuadPart;
+			frameTime = static_cast<float>(ElapsedTime.QuadPart) / Engine::TimeSystem::GetFrequency().QuadPart;
+
 		}
 
 		_LARGE_INTEGER GetGameStartTime()
@@ -31,6 +38,11 @@ namespace Engine {
 		_LARGE_INTEGER GetFrequency()
 		{
 			return Frequency;
+		}
+
+		float GetFrameTime()
+		{
+			return frameTime;
 		}
 
 

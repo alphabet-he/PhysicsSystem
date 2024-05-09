@@ -44,6 +44,9 @@ namespace Engine
 			_LARGE_INTEGER currTime;
 			QueryPerformanceCounter(&currTime);
 
+			// Check collision before update velocity and acceleration
+			CollisionSystem::CheckAllCollision();
+
 			// Update velocity and acceleration
 			PhysicsSystem::UpdateAll(currTime);
 
