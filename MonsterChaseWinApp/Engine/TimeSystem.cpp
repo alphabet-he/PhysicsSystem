@@ -40,11 +40,6 @@ namespace Engine {
 			return Frequency;
 		}
 
-		float GetFrameTime()
-		{
-			return frameTime;
-		}
-
 
 	}
 

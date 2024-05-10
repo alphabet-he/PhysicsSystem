@@ -16,8 +16,6 @@ namespace Engine
 		_LARGE_INTEGER GetLastRecordedTime();
 
 		_LARGE_INTEGER GetFrequency();
-
-		float GetFrameTime();
 	}
 
 }

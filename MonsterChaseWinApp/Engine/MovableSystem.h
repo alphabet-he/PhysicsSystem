@@ -21,9 +21,17 @@ namespace Engine {
 
 		void Update(std::shared_ptr<GameObject> go, _LARGE_INTEGER currTime);
 
+		void Move(std::weak_ptr<GameObject> go, float ElapsedSeconds);
+
 		void ReleaseMovableList();
 
 		void SetVelocity(std::shared_ptr<GameObject> go, Point2D velocity);
+
+		void ClearAllMovedStatus();
+
+		void SetMovedStatus(std::weak_ptr<GameObject> go, bool status);
+
+		void SetMovedStatus(MovableComponent* movable, bool status);
 	
 	}
 }

@@ -13,7 +13,13 @@ namespace Engine {
 		struct CollisionInfo {
 			std::weak_ptr<GameObject> objA;
 			std::weak_ptr<GameObject> objB;
-			float collisionTime = -1.0f;
+			float collisionTime = -1.0f; // from the time arriving at current position to the time of collision
+
+			void copy(CollisionInfo other) {
+				objA = other.objA;
+				objB = other.objB;
+				collisionTime = other.collisionTime;
+			}
 		};
 
 		void Init();
@@ -24,17 +30,20 @@ namespace Engine {
 
 		void ReleaseCollidableList();
 
-		void CheckAllCollision();
+		void CheckAllCollision(_LARGE_INTEGER currTime);
 
-		CollisionInfo* DetectCollision(std::weak_ptr<GameObject> objA, std::weak_ptr<GameObject> objB);
+		CollisionInfo DetectCollision(std::weak_ptr<GameObject> objA, std::weak_ptr<GameObject> objB, 
+			float currTimeInFrame, float frameEndTime);
 
 		bool CalculateCloseOpenTime(CollisionComponent* currCollision, CollisionComponent* targetCollision,
 			Matrix4 matrixCurrToTarget, Vector4 velInTargetCs,
 			std::vector<float>& t_close, std::vector<float>& t_open,
-			float frameTime);
+			float leftFrameTime);
 
 		Point2D GetVelocity(std::shared_ptr<GameObject> obj);
 
 		void TrimCollidableList();
+
+		void UpdateVelocityAfterCollision(std::weak_ptr<GameObject> objA, std::weak_ptr<GameObject> objB);
 	}
 }

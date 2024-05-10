@@ -180,6 +180,9 @@ int WINAPI wWinMain(
         */
         std::shared_ptr<GameObject> Player = GameObjectFactory::CreateGameObject("data\\Player.json");
         std::shared_ptr<GameObject> Monster = GameObjectFactory::CreateGameObject("data\\Monster.json");
+        std::shared_ptr<GameObject> Monster1 = GameObjectFactory::CreateGameObject("data\\Monster1.json");
+        std::shared_ptr<GameObject> Monster2 = GameObjectFactory::CreateGameObject("data\\Monster2.json");
+        std::shared_ptr<GameObject> Monster3 = GameObjectFactory::CreateGameObject("data\\Monster3.json");
 
         do
         {
@@ -205,6 +208,7 @@ int WINAPI wWinMain(
                     // Tell GLib to render this sprite at our calculated location
                     //GLib::Render(*pGoodGuy, GoodOffset, 0.0f, 0.0f);
                 }
+                /*
                 if (Monster && Monster->GetComponent("RenderComponent") != nullptr)
                 {
                     static float			moveDist = .005f;
@@ -221,7 +225,7 @@ int WINAPI wWinMain(
                     // Tell GLib to render this sprite at our calculated location
                     //GLib::Render(*pBadGuy, BadOffset, 0.0f, 0.0f);
                 }
-
+                */
                 // update game state
                 GameState::Update();
 
@@ -237,6 +241,9 @@ int WINAPI wWinMain(
         int a = Player.use_count(); // a = 1
         Player = nullptr; // there shouldn't be any pointer to the game object
         Monster = nullptr;
+        Monster1 = nullptr;
+        Monster2 = nullptr;
+        Monster3 = nullptr;
 
         // IMPORTANT:  Tell GLib to shutdown, releasing resources.
         GLib::Shutdown();

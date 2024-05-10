@@ -1,8 +1,8 @@
 {
   "name": "Player",
 
-  "position": [ -180.0, -100.0 ],
-  "rotation": [ 0.0, 0.0, 1 ],
+  "position": [ 0.0, 0.0 ],
+  "rotation": [ 0.0, 0.0, 0.0 ],
 
   "controller": {
     "type": "player",

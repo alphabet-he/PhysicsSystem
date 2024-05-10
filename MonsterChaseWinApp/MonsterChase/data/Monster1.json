@@ -1,8 +1,8 @@
 {
-  "name": "Monster",
+  "name": "Monster1",
 
-  "position": [ 180.0, -100.0 ],
-  "rotation": [ 0.0, 0.0, -0.8 ],
+  "position": [ -200.0, -100.0 ],
+  "rotation": [ 0.0, 0.0, 0.4 ],
 
   "components": {
     "render": {

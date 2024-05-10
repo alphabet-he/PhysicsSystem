@@ -1,5 +1,6 @@
 #pragma once
 #include <GLib.h>
+#include <cmath>
 
 struct Point2D
 {
@@ -67,6 +68,15 @@ struct Point2D
 
 	GLib::Point2D ToGlibPoint2D() {
 		return GLib::Point2D{ x, y };
+	}
+
+	static float GetDist(Point2D a, Point2D b) {
+		Point2D dist = a - b;
+		return dist.Length();
+	}
+
+	float Length() {
+		return std::sqrt(x * x + y * y);
 	}
 
 };

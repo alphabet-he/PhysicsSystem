@@ -15,19 +15,59 @@ namespace Engine {
 			MovableComponent* movable = static_cast<MovableComponent*>(go->GetComponent("MovableComponent"));
 			if (movable) {
 				go->Position += movable->Velocity * ElapsedSeconds;
+				movable->moved = true;
 			}
 			
 		}
+
+		void Move(std::weak_ptr<GameObject> go, float ElapsedSeconds)
+		{
+			std::shared_ptr<GameObject> temp = go.lock();
+			if (temp) {
+				MovableComponent* movable = static_cast<MovableComponent*>(temp->GetComponent("MovableComponent"));
+				if (movable) {
+					temp->Position += movable->Velocity * ElapsedSeconds;
+					movable->moved = true;
+				}
+			}
+		}
+
 
 		void UpdateAll(_LARGE_INTEGER currTime) {
 			for (auto it = AllMovables.begin(); it != AllMovables.end(); ) {
 				std::shared_ptr<GameObject> temp = it->lock();
 				if (temp) {
-					Update(temp, currTime);
-					++it;
+					
+					// the game object exists
+					MovableComponent* movable = static_cast<MovableComponent*>(temp->GetComponent("MovableComponent"));
+					
+					// if there is movable component
+					if (movable) {
+						// if the object has not been moved yet
+						if (!movable->moved) {
+
+							// move it
+							_LARGE_INTEGER ElapsedTime;
+							ElapsedTime.QuadPart = currTime.QuadPart - Engine::TimeSystem::GetLastRecordedTime().QuadPart;
+							float ElapsedSeconds = static_cast<float>(ElapsedTime.QuadPart) / Engine::TimeSystem::GetFrequency().QuadPart;
+
+							Move(temp, ElapsedSeconds);
+						}
+						movable->moved = false;
+						++it;
+					}
+					// if there is NOT movable component
+					else {
+						it = AllMovables.erase(it); // erase it from list
+						continue;
+					}
+
+					
 				}
+
+				// the game object NO LONGER exists
 				else {
-					it = AllMovables.erase(it);
+					it = AllMovables.erase(it); // erase it from list
 				}
 			}
 		}
@@ -42,6 +82,40 @@ namespace Engine {
 			if (movable) {
 				movable->Velocity = velocity;
 			}
+		}
+
+		void ClearAllMovedStatus()
+		{
+			for (auto it = AllMovables.begin(); it != AllMovables.end(); ) {
+				std::shared_ptr<GameObject> temp = it->lock();
+				if (temp) {
+					MovableComponent* movable = static_cast<MovableComponent*>(temp->GetComponent("MovableComponent"));
+					if (movable) {
+						movable->moved = false;
+					}
+					++it;
+				}
+				else {
+					it = AllMovables.erase(it);
+				}
+			}
+		}
+
+		void SetMovedStatus(std::weak_ptr<GameObject> go, bool status)
+		{
+			std::shared_ptr<GameObject> temp = go.lock();
+			if (temp) {
+				MovableComponent* movable = static_cast<MovableComponent*>(temp->GetComponent("MovableComponent"));
+				if (movable) {
+					movable->moved = status;
+				}
+			}
+			
+		}
+
+		void SetMovedStatus(MovableComponent* movable, bool status)
+		{
+			movable->moved = status;
 		}
 	}
 }

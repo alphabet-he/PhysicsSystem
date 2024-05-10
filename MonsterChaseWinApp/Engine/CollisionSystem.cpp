@@ -1,5 +1,6 @@
 #include "CollisionSystem.h"
 #include "TimeSystem.h"
+#include "MovableSystem.h"
 #include <iostream>
 
 namespace Engine {
@@ -7,6 +8,7 @@ namespace Engine {
 
         std::vector<std::weak_ptr<GameObject>> AllCollidables;
 
+        float MaxProcessingTime = 2.0f;
 
         void Init() {
             GameObjectFactory::RegisterComponentCreatorFunc("collision", CreateCollisionFromJSON);
@@ -38,53 +40,134 @@ namespace Engine {
         }
 
         void ReleaseCollidableList() {
-            for (std::weak_ptr<GameObject> Current : AllCollidables) {
-                std::shared_ptr<GameObject> temp = Current.lock();
-                if (temp) {
-                    CollisionComponent* collision = static_cast<CollisionComponent*>(temp->GetComponent("CollisionComponent"));
-                    if (collision != nullptr) {
-                        
-                    }
-                }
-
-            }
-
             std::vector<std::weak_ptr<GameObject>>().swap(AllCollidables);
         }
 
-        void CheckAllCollision()
+        void CheckAllCollision(_LARGE_INTEGER currTime)
         {
-            for (int i = 0; i < AllCollidables.size() - 1; i++) {
-                for (int j = i + 1; j < AllCollidables.size(); j++) {
-                    CollisionInfo* collisionInfo = DetectCollision(AllCollidables[i], AllCollidables[j]);
-                    if (collisionInfo) {
-                        // there is collision
-                        std::cout << "Collision!" << std::endl;
+            _LARGE_INTEGER TimeStartProcessing, CurrProcessingTime, ElapsedProcessingTime;
+            QueryPerformanceCounter(&TimeStartProcessing);
+
+            _LARGE_INTEGER FrameTime;
+            FrameTime.QuadPart = currTime.QuadPart - Engine::TimeSystem::GetLastRecordedTime().QuadPart;
+            float frameSeconds = static_cast<float>(FrameTime.QuadPart) / Engine::TimeSystem::GetFrequency().QuadPart;
+
+            
+            float calculatedTimeInFrame = 0;
+            bool moved = false;
+            // loop the checking collision process,
+            // until there is no collision found,
+            // or the processing time is too long
+            while (true) {
+
+                CollisionInfo EarliestCollision;
+                float earliestCollisionTime = 100.0f;
+
+                for (int i = 0; i < AllCollidables.size() - 1; i++) {
+                    for (int j = i + 1; j < AllCollidables.size(); j++) {
+
+                        CollisionInfo collisionInfo = DetectCollision(AllCollidables[i], AllCollidables[j], calculatedTimeInFrame, frameSeconds);
+
+                        // if there is collision
+                        if (collisionInfo.collisionTime > -1.0f) {
+
+                            // if the collision is earlier than recorded
+                            if (collisionInfo.collisionTime < earliestCollisionTime) {
+                                EarliestCollision.copy(collisionInfo);
+                                earliestCollisionTime = collisionInfo.collisionTime;
+                            }
+
+                        }
+
+                    }
+                }
+
+                // if there is collision found
+                if (EarliestCollision.collisionTime > -1.0f) {
+
+                    moved = true;
+                   
+                    /*
+                    * process to the earliest collision
+                    */
+
+                    // move everything to the earliest collided time
+                    for (int i = 0; i < AllCollidables.size(); i++) {
+                        MovableSystem::Move(AllCollidables[i], earliestCollisionTime);
+                    }
+                    // set calculated time
+                    calculatedTimeInFrame += earliestCollisionTime;
+                    
+                    // calculate velocity
+                    UpdateVelocityAfterCollision(EarliestCollision.objA, EarliestCollision.objB);
+
+                    // check whether we spent too much time processing the collision
+                    QueryPerformanceCounter(&CurrProcessingTime);
+                    ElapsedProcessingTime.QuadPart = CurrProcessingTime.QuadPart - TimeStartProcessing.QuadPart;
+                    float ElapsedSeconds = static_cast<float>(ElapsedProcessingTime.QuadPart) / Engine::TimeSystem::GetFrequency().QuadPart;
+                    if (ElapsedSeconds >= MaxProcessingTime) {
+                        break;
+                    }
+                }
+
+                // if there is NO collision found in left seconds of the frame
+                else {
+
+                    // if it is first check
+                    if (!moved) {
+                        // do nothing,
+                        // let the movable system deal with all them
+                        // by UpdateAll()
+                    }
+                    // if it is not the first check
+                    // in other words, the objects have moved already
+                    else {
+                        for (int i = 0; i < AllCollidables.size(); i++) {
+                            float secondsLeftInFrame = frameSeconds - calculatedTimeInFrame;
+                            MovableSystem::Move(AllCollidables[i], secondsLeftInFrame);
+                        }
                     }
                     
+
+                    break;
                 }
+
+                
             }
+            
+
         }
 
-        CollisionInfo* DetectCollision(std::weak_ptr<GameObject> objA, std::weak_ptr<GameObject> objB)
+        CollisionInfo DetectCollision(std::weak_ptr<GameObject> objA, std::weak_ptr<GameObject> objB,
+            float currTimeInFrame, float frameEndTime)
         {
+            CollisionInfo ret;
             // check whether the objects exist
             std::shared_ptr<GameObject> tempA = objA.lock();
             if (!tempA) {
                 TrimCollidableList();
-                return nullptr;
+                return ret;
             }
             std::shared_ptr<GameObject> tempB = objB.lock();
             if (!tempB) {
                 TrimCollidableList();
-                return nullptr;
+                return ret;
             }
 
             // make sure objA and objB both have collision
             CollisionComponent* collisionA = static_cast<CollisionComponent*>(tempA->GetComponent("CollisionComponent"));
             CollisionComponent* collisionB = static_cast<CollisionComponent*>(tempB->GetComponent("CollisionComponent"));
             if (!collisionA || !collisionB) {
-                return nullptr;
+                return ret;
+            }
+
+            // check whether two objects are too far away
+            if (Point2D::GetDist(tempA->Position, tempB->Position) >
+                std::fmax(350.0f,
+                    (collisionA->extents.Length() + collisionB->extents.Length()) * 3
+                )
+                ) {
+                return ret;
             }
 
             /*
@@ -133,20 +216,21 @@ namespace Engine {
             bool AInB = CalculateCloseOpenTime(collisionA, collisionB,
                 MatrixAToB, VelAInB,
                 t_close, t_open,
-                Engine::TimeSystem::GetFrameTime());
+                frameEndTime - currTimeInFrame);
             if (AInB) {
                 // not collided
-                return nullptr;
+                return ret;
             }
 
             // B In A check
+
             bool BInA = CalculateCloseOpenTime(collisionB, collisionA,
                 MatrixBToA, VelBInA,
                 t_close, t_open,
-                Engine::TimeSystem::GetFrameTime());
+                frameEndTime - currTimeInFrame);
             if (BInA) {
                 // not collided
-                return nullptr;
+                return ret;
             }
 
             // check t_close and t_open
@@ -158,19 +242,19 @@ namespace Engine {
             
             if (t_close[t_close.size()-1] >= t_open[0]) {
                 // no collision
-                return nullptr;
+                return ret;
             }
 
             else {
                 // collision
-                CollisionInfo ret;
+                
                 ret.objA = objA;
                 ret.objB = objB;
                 // find collision time
                 for (float closeTime : t_close) {
                     if (closeTime < t_open[0]) {
                         ret.collisionTime = closeTime;
-                        return &ret;
+                        return ret;
                     }
                 }
             }
@@ -179,8 +263,11 @@ namespace Engine {
         bool CalculateCloseOpenTime(CollisionComponent* currCollision, CollisionComponent* targetCollision,
             Matrix4 matrixCurrToTarget, Vector4 velInTargetCs, 
             std::vector<float>& t_close, std::vector<float>& t_open,
-            float frameTime)
+            float leftFrameTime)
         {
+
+            float t_open_x, t_open_y, t_close_x, t_close_y;
+
             Vector4 AExtentsXInB = matrixCurrToTarget * Vector4(currCollision->extents.x, 0.0f, 0.0f, 0.0f);
             Vector4 AExtentsYInB = matrixCurrToTarget * Vector4(0.0f, currCollision->extents.y, 0.0f, 0.0f);
 
@@ -198,10 +285,16 @@ namespace Engine {
                 if (ACenterInB.x < BLeft || ACenterInB.x > BRight) {
                     return true;
                 }
+                else {
+                    t_close_x = 0;
+                    t_open_x = leftFrameTime;
+                }
             }
-
-            float t_close_x = (BLeft - ACenterInB.x) / velInTargetCs.x;
-            float t_open_x = (BRight - ACenterInB.x) / velInTargetCs.x;
+            else {
+                t_close_x = (BLeft - ACenterInB.x) / velInTargetCs.x;
+                t_open_x = (BRight - ACenterInB.x) / velInTargetCs.x;
+            }
+            
 
             if (t_close_x > t_open_x) {
                 float temp = t_close_x;
@@ -221,10 +314,16 @@ namespace Engine {
                 if (ACenterInB.y < BDown || ACenterInB.y > BUp) {
                     return true;
                 }
+                else {
+                    t_close_y = 0;
+                    t_open_y = leftFrameTime;
+                }
             }
-
-            float t_close_y = (BDown - ACenterInB.y) / velInTargetCs.y;
-            float t_open_y = (BUp - ACenterInB.y) / velInTargetCs.y;
+            else {
+                t_close_y = (BDown - ACenterInB.y) / velInTargetCs.y;
+                t_open_y = (BUp - ACenterInB.y) / velInTargetCs.y;
+            }
+            
 
             if (t_close_y > t_open_y) {
                 float temp = t_close_y;
@@ -232,16 +331,16 @@ namespace Engine {
                 t_open_y = temp;
             }
 
-            if (t_close_x > frameTime || t_close_y > frameTime
-                || t_open_x < 0 || t_open_y < 0 )
+            if (t_close_x >= leftFrameTime || t_close_y >= leftFrameTime
+                || t_open_x <= 0 || t_open_y <= 0 )
                 return true;
 
             
 
-            t_close.push_back(t_close_x);
-            t_close.push_back(t_close_y);
-            t_open.push_back(t_open_x);
-            t_open.push_back(t_open_y);
+            t_close.push_back(std::fmax(t_close_x, 0.0f));
+            t_close.push_back(std::fmax(t_close_y, 0.0f));
+            t_open.push_back(std::fmin(t_open_x, leftFrameTime));
+            t_open.push_back(std::fmin(t_open_y, leftFrameTime));
 
 
             return false;
@@ -267,6 +366,31 @@ namespace Engine {
                     it = AllCollidables.erase(it);
                 }
             }
+        }
+
+        void UpdateVelocityAfterCollision(std::weak_ptr<GameObject> objA, std::weak_ptr<GameObject> objB)
+        {
+            // get all values
+            std::shared_ptr<GameObject> tempA = objA.lock();
+            std::shared_ptr<GameObject> tempB = objB.lock();
+
+            PhysicsComponent* physicsA = static_cast<PhysicsComponent*>(tempA->GetComponent("PhysicsComponent"));
+            MovableComponent* movableA = static_cast<MovableComponent*>(tempA->GetComponent("MovableComponent"));
+            PhysicsComponent* physicsB = static_cast<PhysicsComponent*>(tempB->GetComponent("PhysicsComponent"));
+            MovableComponent* movableB = static_cast<MovableComponent*>(tempB->GetComponent("MovableComponent"));
+            assert(physicsA && movableA && physicsB && movableB);
+            float massA = physicsA->Mass;
+            float massB = physicsB->Mass;
+            Point2D velA = movableA->Velocity;
+            Point2D velB = movableB->Velocity;
+
+            // calculation
+            Point2D velANew = velA * (massA - massB) / (massA + massB) + velB * (2 * massB) / (massA + massB);
+            Point2D velBNew = velB * (massB - massA) / (massA + massB) + velA * (2 * massA) / (massA + massB);
+
+            // update velocity
+            movableA->Velocity = velANew;
+            movableB->Velocity = velBNew;
         }
 
 	}
