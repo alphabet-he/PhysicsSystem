@@ -1,0 +1,24 @@
+{
+  "name": "Monster3",
+
+  "position": [ 50.0, -400.0 ],
+  "rotation": [ 0.0, 0.0, 0.6 ],
+
+  "components": {
+    "render": {
+      "sprite_texture_source": "data\\BadGuy_mark_no_crop.dds"
+    },
+    "moveable": {
+      "velocity": [ 0.0, 0.0 ],
+      "acceleration": [ 0.0, 0.0 ]
+    },
+    "physics": {
+      "kDrag": [ 0.0, 0.0 ],
+      "mass": 0.5
+    },
+    "collision": {
+      "center": [ 0.0, 118.0 ],
+      "extents": [ 160.0, 118.0 ]
+    }
+  }
+}

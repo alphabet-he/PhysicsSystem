@@ -1,0 +1,31 @@
+{
+  "name": "Player",
+
+  "position": [ 0.0, 0.0 ],
+  "rotation": [ 0.0, 0.0, 0.0 ],
+
+  "controller": {
+    "type": "player",
+    "initializer": {
+      "name": "Skylar"
+    }
+  },
+
+  "components": {
+    "render": {
+      "sprite_texture_source": "data\\GoodGuy_mark_no_crop.dds"
+    },
+    "moveable": {
+      "velocity": [ 0.0, 0.0 ],
+      "acceleration": [ 0.0, 0.0 ]
+    },
+    "physics": {
+      "kDrag": [ 0.0, 0.0 ],
+      "mass": 1.0
+    },
+    "collision":{
+      "center":[ 0.0, 82.0 ],
+      "extents": [44.0, 82.0]
+    }
+  }
+}
